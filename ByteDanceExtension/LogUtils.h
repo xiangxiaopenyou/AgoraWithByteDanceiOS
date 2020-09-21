@@ -5,12 +5,18 @@
 //  Created by LLF on 2020/9/21.
 //
 
-#import <Foundation/Foundation.h>
+#ifndef logutils_h
+#define logutils_h
 
-NS_ASSUME_NONNULL_BEGIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+void logmessage(const char *message, ...) __attribute__((format(printf, 1, 2)));
 
-@interface LogUtils : NSObject
+#ifdef __cplusplus
+}
+#endif
 
-@end
-
-NS_ASSUME_NONNULL_END
+#define PRINTF_INFO(...) logmessage(__VA_ARGS__)
+#define PRINTF_ERROR(...) logmessage(__VA_ARGS__)
+#endif /* logutils_h */

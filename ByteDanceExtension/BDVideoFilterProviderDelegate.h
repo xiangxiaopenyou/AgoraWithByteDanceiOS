@@ -1,5 +1,5 @@
 //
-//  BDDataProviderDelegate.h
+//  BDVideoFilterProviderDelegate.h
 //  ByteDanceExtension
 //
 //  Created by LLF on 2020/9/21.
@@ -9,17 +9,8 @@
 #define BDDataProviderDelegate_h
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
 
-typedef NS_ENUM(NSInteger, ByteDanceErrorCode) {
-  BYTEDANCE_ERROR_OK = 0,
-  BYTEDANCE_ERROR_NOT_INIT_RTC_ENGINE = 1,
-  BYTEDANCE_ERROR_NOT_INIT_VIDEO_FILTER = 2,
-  BYTEDANCE_ERR_NOT_INIT_PLUGIN_MANAGER = 3,
-  BYTEDANCE_ERROR_ERR_PARAMETER = 10,
-  BYTEDANCE_ERROR_INVALID_JSON = 100,
-  BYTEDANCE_ERROR_INVALID_JSON_TYPE = 101,
-};
+NSString* _Nonnull bd_VideoFilterProviderClassName();
 
 @protocol BDVideoFrameDataSource <NSObject>
 
@@ -43,12 +34,11 @@ typedef NS_ENUM(NSInteger, ByteDanceErrorCode) {
 @end
 
 @protocol BDVideoFilterDelegate<NSObject>
-- (NSInteger)adaptVideoFrame:(id<BDVideoFrameDataSource> _Nullable)inFrame outFrame:(id<BDVideoFrameDataSource> _Nullable)outFrame;
-- (NSInteger)enable:(BOOL)enabled withName:(NSString * _Nonnull)name;
-- (NSInteger)setProperty:(NSString * _Nonnull)key withValue:(NSString * _Nonnull)value withName:(NSString * _Nonnull)name;
-- (BOOL)onDataStreamWillStart;
+- (int)adaptVideoFrame:(id<BDVideoFrameDataSource> _Nullable)inFrame outFrame:(id<BDVideoFrameDataSource> _Nullable)outFrame;
+- (void)setEnable:(BOOL)enabled;
+- (size_t)setProperty:(NSString * _Nullable)property;
+- (bool)onDataStreamWillStart;
 - (void)onDataStreamWillStop;
-- (NSInteger)setDataReceiverDelegate:(id<BDDataReceiverDelegate> _Nullable)delegate withName:(NSString * _Nonnull)name;
 @end
 
 @protocol BDVideoFilterProviderDelegate<NSObject>
@@ -56,6 +46,8 @@ typedef NS_ENUM(NSInteger, ByteDanceErrorCode) {
 - (NSString * _Nonnull)version;
 - (NSString * _Nonnull)vendor;
 - (id<BDVideoFilterDelegate> _Nonnull)videoFilterProvider;
+@property (nonatomic, weak) id<BDDataReceiverDelegate> _Nullable dataReceiveDelegate;
+
 @end
 
 #endif /* BDDataProviderDelegate_h */
