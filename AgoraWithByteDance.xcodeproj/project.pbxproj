@@ -98,7 +98,7 @@
 		7E74986A2518AC2900CA5E4F /* memorybuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498462518AC2900CA5E4F /* memorybuffer.h */; };
 		7E74986B2518AC2900CA5E4F /* pointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498472518AC2900CA5E4F /* pointer.h */; };
 		7E7498812518AF8200CA5E4F /* BDErrorCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498762518AE3200CA5E4F /* BDErrorCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7E7498892518C30300CA5E4F /* libeffect-sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7498882518C30300CA5E4F /* libeffect-sdk.a */; };
+		7E7498942518C6E700CA5E4F /* libeffect-sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7498932518C6E700CA5E4F /* libeffect-sdk.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -240,7 +240,7 @@
 		7E7498462518AC2900CA5E4F /* memorybuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memorybuffer.h; sourceTree = "<group>"; };
 		7E7498472518AC2900CA5E4F /* pointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pointer.h; sourceTree = "<group>"; };
 		7E7498762518AE3200CA5E4F /* BDErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDErrorCode.h; sourceTree = "<group>"; };
-		7E7498882518C30300CA5E4F /* libeffect-sdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libeffect-sdk.a"; sourceTree = "<group>"; };
+		7E7498932518C6E700CA5E4F /* libeffect-sdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libeffect-sdk.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,7 +273,7 @@
 				7E749410251852B000CA5E4F /* VideoToolbox.framework in Frameworks */,
 				7E74940E251852A900CA5E4F /* AudioToolbox.framework in Frameworks */,
 				7E74940C2518529D00CA5E4F /* CoreTelephony.framework in Frameworks */,
-				7E7498892518C30300CA5E4F /* libeffect-sdk.a in Frameworks */,
+				7E7498942518C6E700CA5E4F /* libeffect-sdk.a in Frameworks */,
 				7E74940A2518529100CA5E4F /* SystemConfiguration.framework in Frameworks */,
 				7E7494082518528800CA5E4F /* CoreML.framework in Frameworks */,
 				7E7494032518528100CA5E4F /* libc++.tbd in Frameworks */,
@@ -409,7 +409,7 @@
 		7E74960325187EE600CA5E4F /* bytedance */ = {
 			isa = PBXGroup;
 			children = (
-				7E7498882518C30300CA5E4F /* libeffect-sdk.a */,
+				7E7498932518C6E700CA5E4F /* libeffect-sdk.a */,
 				7E74960425187EE600CA5E4F /* bef_effect_ai_lightcls.h */,
 				7E74960525187EE600CA5E4F /* bef_effect_ai_headseg.h */,
 				7E74960625187EE600CA5E4F /* bef_effect_ai_public_define.h */,
