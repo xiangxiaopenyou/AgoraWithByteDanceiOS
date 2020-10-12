@@ -6,23 +6,20 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BDVideoFilterProviderDelegate.h"
+#import "AgoraRtcKit2/AgoraVideoFilterProviderDelegate.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface BDVideoFilterProvider : NSObject
-
-@property (nonatomic, weak) id<BDDataReceiverDelegate> dataReceiveDelegate;
-
+@protocol AgoraByteDanceDataReceiver <NSObject>
+- (void)onDataReceive:(NSString * _Nullable)data;
 @end
 
-NS_ASSUME_NONNULL_END
-
-
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BDVideoFilter : NSObject <BDVideoFilterDelegate>
+@interface BDVideoFilterProvider : NSObject <AgoraVideoFilterProviderDelegate>
+@property (nonatomic, weak) id<AgoraByteDanceDataReceiver> dataReceiver;
++ (instancetype)sharedInstance;
 
+- (void)loadProcessor;
+- (int)setParameter:(NSString *)parameter;
 @end
 
 NS_ASSUME_NONNULL_END

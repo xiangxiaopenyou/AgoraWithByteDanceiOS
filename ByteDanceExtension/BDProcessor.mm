@@ -41,7 +41,7 @@ bool BDProcessor::releaseOpenGL() {
   return true;
 }
 
-void BDProcessor::prepareCachedVideoFrame(const BDVideoFrame& capturedFrame) {
+void BDProcessor::prepareCachedVideoFrame(const agora::media::base::VideoFrame& capturedFrame) {
   int ysize = capturedFrame.yStride * capturedFrame.height;
   int usize = capturedFrame.uStride * capturedFrame.height / 2;
   int vsize = capturedFrame.vStride * capturedFrame.height / 2;
@@ -78,7 +78,7 @@ void BDProcessor::prepareCachedVideoFrame(const BDVideoFrame& capturedFrame) {
   
 }
 
-void BDProcessor::processEffect(const BDVideoFrame &capturedFrame) {
+void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFrame) {
   makeCurrent();
   if (!byteEffectHandler_) {
     bef_effect_result_t ret;
@@ -269,8 +269,8 @@ void BDProcessor::processFaceDetect() {
     writer.Int(faceInfo.base_infos[i].action);
     writer.Key("expression");
     writer.Int((int)attributeResult.attr_info[i].exp_type);
-    writer.Key("confused_prob");
-    writer.Double(attributeResult.attr_info[i].confused_prob);
+//    writer.Key("confused_prob");
+//    writer.Double(attributeResult.attr_info[i].confused_prob);
     writer.EndObject();
   }
   writer.EndArray();
@@ -408,7 +408,7 @@ void BDProcessor::processLightDetect() {
   dataCallback(text);
 }
 
-int BDProcessor::processFrame(const BDVideoFrame &capturedFrame) {
+int BDProcessor::processFrame(const agora::media::base::VideoFrame &capturedFrame) {
   const std::lock_guard<std::mutex> lock(mutex_);
   
   if (aiEffectEnabled_ || faceAttributeEnabled_) {
@@ -466,7 +466,7 @@ int BDProcessor::releaseEffectEngine() {
     free(rgbaBuffer_);
     rgbaBuffer_ = nullptr;
   }
-  prevFrame_ = BDVideoFrame();
+  prevFrame_ = agora::media::base::VideoFrame();
   
   faceAttributeEnabled_ = false;
   faceDetectModelPath_.clear();

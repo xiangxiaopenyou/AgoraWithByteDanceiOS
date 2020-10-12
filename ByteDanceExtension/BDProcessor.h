@@ -9,7 +9,7 @@
 #include <string>
 #include <mutex>
 #include <vector>
-#include "BDVideoFrame.h"
+#include "AgoraRtcKit2/AgoraMediaBase.h"
 #include "bef_effect_ai_api.h"
 #include "bef_effect_ai_lightcls.h"
 #include "rapidjson.h"
@@ -20,7 +20,7 @@ class BDProcessor {
 public:
   bool initOpenGL();
   bool releaseOpenGL();
-  int processFrame(const BDVideoFrame& capturedFrame);
+  int processFrame(const agora::media::base::VideoFrame& capturedFrame);
   int releaseEffectEngine();
   int setParameters(std::string parameter);
   void onDataCallback(std::string data);
@@ -30,8 +30,8 @@ private:
   void processFaceDetect();
   void processHandDetect();
   void processLightDetect();
-  void processEffect(const BDVideoFrame& capturedFrame);
-  void prepareCachedVideoFrame(const BDVideoFrame& capturedFrame);
+  void processEffect(const agora::media::base::VideoFrame& capturedFrame);
+  void prepareCachedVideoFrame(const agora::media::base::VideoFrame& capturedFrame);
   std::mutex mutex_;
   
   bef_effect_handle_t byteEffectHandler_ = nullptr;
@@ -61,7 +61,7 @@ private:
   std::string lightDetectModelPath_;
   bef_effect_handle_t lightDetectHandler_ = nullptr;
   
-  BDVideoFrame prevFrame_ = BDVideoFrame();
+  agora::media::base::VideoFrame prevFrame_ = agora::media::base::VideoFrame();
   unsigned char* yuvBuffer_ = nullptr;
   unsigned char* rgbaBuffer_ = nullptr;
   

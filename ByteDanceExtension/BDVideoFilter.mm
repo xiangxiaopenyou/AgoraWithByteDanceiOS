@@ -12,37 +12,48 @@ namespace ByteDance {
 namespace Extension {
 BDVideoFilter::BDVideoFilter(std::shared_ptr<BDProcessor> bdProcessor) {
   bdProcessor_ = bdProcessor;
+  bdProcessor_->initOpenGL();
 }
 
 BDVideoFilter::~BDVideoFilter() {
-  bdProcessor_->releaseOpenGL();
-}
-
-void BDVideoFilter::setEnabled(bool enable) {}
-
-bool BDVideoFilter::adaptVideoFrame(const BDVideoFrame& capturedFrame,
-                                    BDVideoFrame& adaptedFrame) {
-  bdProcessor_->processFrame(capturedFrame);
-  adaptedFrame = capturedFrame;
-  return true;
-}
-
-size_t BDVideoFilter::setProperty(const char *property) {
-  if (!property) {
-    return ByteDanceErrorCodeErrorParameter;
+  if (bdProcessor_) {
+    bdProcessor_->releaseOpenGL();
   }
-  std::string parameter(property);
-  bdProcessor_->setParameters(parameter);
+}
+
+bool BDVideoFilter::setProperty(const char* key, const char* json_value) {
+  if (!json_value) {
+    return false;
+  }
+  
+  if (bdProcessor_) {
+    std::string parameter(json_value);
+    bdProcessor_->setParameters(parameter);
+    return true;
+  }
+  
+  return false;
+}
+
+unsigned int BDVideoFilter::property(const char* key,
+                                     char* json_value_buffer,
+                                     unsigned int json_value_buffer_size) const {
   return 0;
 }
 
-bool BDVideoFilter::onDataStreamWillStart() {
-  bdProcessor_->initOpenGL();
+bool BDVideoFilter::setEventDelegate(agora::rtc::IExtensionVideoFilterEventDelegate* delegate) {
   return true;
 }
 
-void BDVideoFilter::onDataStreamWillStop() {
-  bdProcessor_->releaseOpenGL();
+bool BDVideoFilter::filter(const agora::media::base::VideoFrame& original_frame,
+            agora::media::base::VideoFrame& processed_frame) {
+  if (bdProcessor_) {
+    bdProcessor_->processFrame(original_frame);
+    processed_frame = original_frame;
+    return true;
+  }
+  
+  return false;
 }
 
 }

@@ -1,0 +1,3 @@
+framework module AgoraRtcKit2 {
+  export *
+}
