@@ -32,7 +32,10 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
   [self setupButtons];
   [self hideVideoMuted];
   [self initializeAgoraEngine];
@@ -50,7 +53,10 @@
   AgoraRtcEngineConfig *config = [AgoraRtcEngineConfig new];
   config.appId = appID;
   AgoraVideoFilterExtension *ext = [AgoraVideoFilterExtension new];
-  ext.provider = [BDVideoFilterProvider sharedInstance];
+  BDVideoFilterProvider *provider = [BDVideoFilterProvider sharedInstance];
+  [provider loadProcessor];
+  provider.dataReceiver = self;
+  ext.provider = provider;
   ext.eventHandler = self;
   config.extensions = @[ext];
   self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
@@ -69,7 +75,6 @@
                                                bitrate:AgoraVideoBitrateStandard
                                        orientationMode:AgoraVideoOutputOrientationModeAdaptative mirrorMode:AgoraVideoMirrorModeAuto];
   [self.agoraKit setVideoEncoderConfiguration:encoderConfiguration];
-  [[BDVideoFilterProvider sharedInstance] loadProcessor];
 }
 
 - (void)setupLocalVideo {
@@ -145,7 +150,7 @@
 }
 
 - (void)hideControlButtons {
-  self.controlButtons.hidden = true;
+  //self.controlButtons.hidden = true;
 }
 
 - (void)remoteVideoTapped:(UITapGestureRecognizer *)recognizer {
