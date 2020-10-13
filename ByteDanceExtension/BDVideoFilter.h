@@ -24,11 +24,12 @@ public:
   bool setEventDelegate(agora::rtc::IExtensionVideoFilterEventDelegate* delegate) override;
   bool filter(const agora::media::base::VideoFrame& original_frame,
               agora::media::base::VideoFrame& processed_frame) override;
-
+  void sendEvent(const char* key, const char* json_value);
 protected:
   BDVideoFilter() = default;
 private:
   std::shared_ptr<BDProcessor> bdProcessor_;
+  agora::rtc::IExtensionVideoFilterEventDelegate* delegate_;
 };
 
 }

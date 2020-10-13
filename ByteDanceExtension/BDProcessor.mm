@@ -185,13 +185,7 @@ void BDProcessor::processFaceDetect() {
     CHECK_BEF_AI_RET_SUCCESS(ret,
                              "BDProcessor::processFaceDetect create face detect handle failed ! %d",
                              ret);
-#if defined(__ANDROID__) || defined(TARGET_OS_ANDROID)
-    void *context = AndroidContextHelper::getContext();
-    ret = bef_effect_ai_face_check_license(
-                                           JniHelper::getJniHelper()->attachCurrentTnread(),
-                                           reinterpret_cast<jobject>(context), faceDetectHandler_,
-                                           licensePath_.c_str());
-#elif defined __APPLE__
+#if defined __APPLE__
     ret = bef_effect_ai_face_check_license(faceDetectHandler_, licensePath_.c_str());
 #endif
     CHECK_BEF_AI_RET_SUCCESS(ret,
@@ -213,13 +207,7 @@ void BDProcessor::processFaceDetect() {
                              "BDProcessor::processFaceDetect create face attribute handle failed ! %d",
                              ret);
     
-#if defined(__ANDROID__) || defined(TARGET_OS_ANDROID)
-    void *context = AndroidContextHelper::getContext();
-    ret = bef_effect_ai_face_attribute_check_license(
-                                                     JniHelper::getJniHelper()->attachCurrentTnread(),
-                                                     reinterpret_cast<jobject>(context), faceAttributesHandler_,
-                                                     licensePath_.c_str());
-#elif defined __APPLE__
+#if defined __APPLE__
     ret = bef_effect_ai_face_attribute_check_license(faceAttributesHandler_, licensePath_.c_str());
 #endif
     

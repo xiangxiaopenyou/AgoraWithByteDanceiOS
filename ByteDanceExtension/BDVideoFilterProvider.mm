@@ -85,8 +85,10 @@
   return @"v3.9.3.1";
 }
 
-- (void)onDataReceive:(NSString *_Nullable)data {
-  [self.dataReceiver onDataReceive:data];
+- (void)onDataReceive:(const char *)data {
+  if (data && _bdVideoFilter) {
+    _bdVideoFilter->sendEvent(data, data);
+  }
 }
 
 - (void)initGL {
@@ -120,11 +122,10 @@ extern "C" void makeCurrent() {
   [[BDVideoFilterProvider sharedInstance] makeCurrent];
 }
 
-extern "C" void dataCallback(const char * data) {
+extern "C" void dataCallback(const char *data) {
   if (!data) { return; }
-  NSString *str = [NSString stringWithCString:data encoding:[NSString defaultCStringEncoding]];
   dispatch_async(dispatch_get_main_queue(), ^{
-    [[BDVideoFilterProvider sharedInstance] onDataReceive:str];
+    [[BDVideoFilterProvider sharedInstance] onDataReceive:data];
   });
 }
 

@@ -11,7 +11,7 @@
 #import "BDResourceHelper.h"
 #import "AppID.h"
 
-@interface VideoChatViewController() <AgoraByteDanceDataReceiver, AgoraVideoFilterEventHandlerDelegate> {
+@interface VideoChatViewController() <AgoraVideoFilterEventHandlerDelegate> {
   NSString *faceInfo;
   NSString *handInfo;
   NSString *lightInfo;
@@ -55,7 +55,6 @@
   AgoraVideoFilterExtension *ext = [AgoraVideoFilterExtension new];
   BDVideoFilterProvider *provider = [BDVideoFilterProvider sharedInstance];
   [provider loadProcessor];
-  provider.dataReceiver = self;
   ext.provider = provider;
   ext.eventHandler = self;
   config.extensions = @[ext];
@@ -259,26 +258,21 @@
   [self enableEffect];
 }
 
-#pragma mark - AgoraByteDanceDataReceiver
+#pragma mark - AgoraVideoFilterEventHandlerDelegate
 
-- (void)onDataReceive:(NSString *)data {
-  if ([data containsString:@"plugin.bytedance.face.info"]) {
-    faceInfo = data;
+- (void)onEvent:(NSString *)key value:(NSString *)value {
+  if ([value containsString:@"plugin.bytedance.face.info"]) {
+    faceInfo = value;
   }
-  if ([data containsString:@"plugin.bytedance.hand.info"]) {
-    handInfo = data;
+  if ([value containsString:@"plugin.bytedance.hand.info"]) {
+    handInfo = value;
   }
-  if ([data containsString:@"plugin.bytedance.light.info"]) {
-    lightInfo = data;
+  if ([value containsString:@"plugin.bytedance.light.info"]) {
+    lightInfo = value;
   }
   
   NSString* info = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", lightInfo, handInfo, faceInfo];
   self.infoTextView.text = info;
-}
-
-#pragma mark - AgoraVideoFilterEventHandlerDelegate
-
-- (void)onEvent:(NSString *)key value:(NSString *)value {
 }
 
 @end

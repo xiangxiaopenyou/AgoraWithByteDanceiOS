@@ -42,7 +42,14 @@ unsigned int BDVideoFilter::property(const char* key,
 }
 
 bool BDVideoFilter::setEventDelegate(agora::rtc::IExtensionVideoFilterEventDelegate* delegate) {
+  delegate_ = delegate;
   return true;
+}
+
+void BDVideoFilter::sendEvent(const char* key, const char* json_value) {
+  if (delegate_) {
+    delegate_->fireEvent(key, json_value);
+  }
 }
 
 bool BDVideoFilter::filter(const agora::media::base::VideoFrame& original_frame,
