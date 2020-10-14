@@ -21,15 +21,16 @@ public:
   unsigned int property(const char* key,
                         char* json_value_buffer,
                         unsigned int json_value_buffer_size) const override;
-  bool setEventDelegate(agora::rtc::IExtensionVideoFilterEventDelegate* delegate) override;
+  bool setExtensionFacility(agora::rtc::IExtensionFacility* facility) override;
   bool filter(const agora::media::base::VideoFrame& original_frame,
               agora::media::base::VideoFrame& processed_frame) override;
   void sendEvent(const char* key, const char* json_value);
+  void log(agora::commons::LOG_LEVEL level, const char* message);
 protected:
   BDVideoFilter() = default;
 private:
   std::shared_ptr<BDProcessor> bdProcessor_;
-  agora::rtc::IExtensionVideoFilterEventDelegate* delegate_;
+  agora::rtc::IExtensionFacility* facility_;
 };
 
 }

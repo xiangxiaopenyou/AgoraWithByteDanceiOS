@@ -9,13 +9,21 @@ config.appId = appID;
 AgoraVideoFilterExtension *ext = [AgoraVideoFilterExtension new];
 BDVideoFilterProvider *provider = [BDVideoFilterProvider sharedInstance];//这个provider通过第三方Vendor提供的framework获取
 [provider loadProcessor];
-provider.dataReceiver = self;
 ext.provider = provider;
 ext.eventHandler = self; // EventHandler为实现了AgoraVideoFilterEventHandlerDelegate接口的对象
 config.extensions = @[ext];
 self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
 ```
-AgoraVideoFilterEventHandlerDelegate接口定义如下
+
+# 注册人脸识别，光线识别，表情识别，手部识别的回调
+
+## iOS
+
+```
+ext.eventHandler = self; // EventHandler为实现了AgoraVideoFilterEventHandlerDelegate接口的对象
+```
+
+其中 self 需要实现以下 protocol
 
 ```
 // iOS
@@ -69,22 +77,6 @@ AgoraVideoFilterEventHandlerDelegate接口定义如下
     }
   ]
 }
-```
-
-# 注册人脸识别，光线识别，表情识别，手部识别的回调
-
-## iOS
-
-```
-[[BDVideoFilterProvider sharedInstance] setDataReceiver:self];
-```
-
-其中 self 需要实现以下 protocol
-
-```
-@protocol AgoraByteDanceDataReceiver <NSObject>
-- (void)onDataReceive:(NSString *)data;
-@end
 ```
 
 PS: 需要使用SDK Cpp相关Interface，需要引入AgoraRtcKit2.framework, 需要Emedded & Sign

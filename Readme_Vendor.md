@@ -13,7 +13,7 @@ public:
   unsigned int property(const char* key,
                         char* json_value_buffer,
                         unsigned int json_value_buffer_size) const override;
-  bool setEventDelegate(agora::rtc::IExtensionVideoFilterEventDelegate* delegate) override;
+  bool setExtensionFacility(agora::rtc::IExtensionFacility* facility) override;
   bool filter(const agora::media::base::VideoFrame& original_frame,
               agora::media::base::VideoFrame& processed_frame) override;
 
@@ -26,13 +26,13 @@ private:
 }
 }
 ```
+PS: IExtensionFacility 提供了触发回调事件 & log能力
 
 # 实现AgoraVideoFilterProviderDelegate接口
 
 ```
 // iOS
 @interface BDVideoFilterProvider : NSObject <AgoraVideoFilterProviderDelegate>
-@property (nonatomic, weak) id<AgoraByteDanceDataReceiver> dataReceiver;
 + (instancetype)sharedInstance;
 
 - (void)loadProcessor;

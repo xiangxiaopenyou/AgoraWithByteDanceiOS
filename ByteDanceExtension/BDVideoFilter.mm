@@ -41,14 +41,20 @@ unsigned int BDVideoFilter::property(const char* key,
   return 0;
 }
 
-bool BDVideoFilter::setEventDelegate(agora::rtc::IExtensionVideoFilterEventDelegate* delegate) {
-  delegate_ = delegate;
+bool BDVideoFilter::setExtensionFacility(agora::rtc::IExtensionFacility* facility) {
+  facility_ = facility;
   return true;
 }
 
 void BDVideoFilter::sendEvent(const char* key, const char* json_value) {
-  if (delegate_) {
-    delegate_->fireEvent(key, json_value);
+  if (facility_) {
+    facility_->fireEvent(key, json_value);
+  }
+}
+
+void BDVideoFilter::log(agora::commons::LOG_LEVEL level, const char* message) {
+  if (facility_) {
+    facility_->log(level, message);
   }
 }
 

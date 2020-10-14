@@ -47,6 +47,13 @@ class IExtensionProvider : public RefCountInterface {
   ~IExtensionProvider() {}
 };
 
+class IExtensionEventDelegate {
+  public:
+    virtual ~IExtensionEventDelegate() = default;
+    virtual void fireEvent(const char* key, const char* json_value) = 0;
+};
+using ExtensionEventDelegateDeleter = void(*)(IExtensionEventDelegate*);
+
 /**
  * Interface for handling agora extensions
  */
@@ -68,11 +75,11 @@ class IExtensionControl {
 
   virtual int registerPreEncodeVideoFilterProvider(
     IExtensionVideoFilterProvider* provider, ExtensionVideoFilterProviderDeleter providerDeleter,
-    IExtensionVideoFilterEventDelegate* eventDelegate, ExtensionVideoFilterEventDelegateDeleter eventDelegateDeleter) = 0;
+    IExtensionEventDelegate* eventDelegate, ExtensionEventDelegateDeleter eventDelegateDeleter) = 0;
 
   virtual int registerPostDecodeVideoFilterProvider(
     IExtensionVideoFilterProvider* provider, ExtensionVideoFilterProviderDeleter providerDeleter,
-    IExtensionVideoFilterEventDelegate* eventDelegate, ExtensionVideoFilterEventDelegateDeleter eventDelegateDeleter) = 0;
+    IExtensionEventDelegate* eventDelegate, ExtensionEventDelegateDeleter eventDelegateDeleter) = 0;
 
   /**
    * This method registers an extension provider to SDK.

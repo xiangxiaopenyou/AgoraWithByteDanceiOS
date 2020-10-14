@@ -104,10 +104,32 @@
 }
 
 - (void)makeCurrent {
-  EAGLContext * prev = [EAGLContext currentContext];
+  EAGLContext *prev = [EAGLContext currentContext];
   if (prev != _context) {
     [EAGLContext setCurrentContext:_context];
   }
+}
+
+- (void)logMessage:(int)retval message:(const char *)message {
+  if (!message) {
+    return;
+  }
+  
+  if (_bdVideoFilter) {
+    if (retval != 0) {
+      _bdVideoFilter->log(agora::commons::LOG_LEVEL::LOG_LEVEL_ERROR, message);
+    } else {
+      _bdVideoFilter->log(agora::commons::LOG_LEVEL::LOG_LEVEL_INFO, message);
+    }
+  }
+}
+
+extern "C" void logInfoMessage(std::string message) {
+  [[BDVideoFilterProvider sharedInstance] logMessage:0 message:message.c_str()];
+}
+
+extern "C" void logMessage(int retval, std::string message) {
+  [[BDVideoFilterProvider sharedInstance] logMessage:retval message:message.c_str()];
 }
 
 extern "C" void initGL() {
