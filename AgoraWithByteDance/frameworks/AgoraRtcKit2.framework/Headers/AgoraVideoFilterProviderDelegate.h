@@ -64,11 +64,3 @@ typedef NS_ENUM(NSInteger, AgoraVideoFilterPosition) {
  */
 - (AgoraVideoFilterPosition)videoFilterPosition;
 @end
-
-/**
- * Protocol of Video Filter Event Handler
- * It needs implement by Client App
- */
-@protocol AgoraVideoFilterEventHandlerDelegate <NSObject>
-- (void)onEvent:(NSString * _Nullable)key value:(NSString * _Nullable)value;
-@end

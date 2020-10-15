@@ -73,11 +73,11 @@ class IExtensionControl {
    */
   virtual void getCapabilities(Capabilities& capabilities) = 0;
 
-  virtual int registerPreEncodeVideoFilterProvider(
+  virtual int registerPreEncodeVideoFilterProvider(const char* provider_id,
     IExtensionVideoFilterProvider* provider, ExtensionVideoFilterProviderDeleter providerDeleter,
     IExtensionEventDelegate* eventDelegate, ExtensionEventDelegateDeleter eventDelegateDeleter) = 0;
 
-  virtual int registerPostDecodeVideoFilterProvider(
+  virtual int registerPostDecodeVideoFilterProvider(const char* provider_id,
     IExtensionVideoFilterProvider* provider, ExtensionVideoFilterProviderDeleter providerDeleter,
     IExtensionEventDelegate* eventDelegate, ExtensionEventDelegateDeleter eventDelegateDeleter) = 0;
 

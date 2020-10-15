@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AgoraEnumerates.h"
 #import "AgoraVideoFilterProviderDelegate.h"
+#import "AgoraVideoFilterEventHandlerDelegate.h"
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
