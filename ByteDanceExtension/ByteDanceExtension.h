@@ -16,4 +16,4 @@ FOUNDATION_EXPORT const unsigned char ByteDanceExtensionVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <ByteDanceExtension/PublicHeader.h>
 
 #import <ByteDanceExtension/BDErrorCode.h>
-#import <ByteDanceExtension/BDVideoFilterProvider.h>
+#import <ByteDanceExtension/BDVideoFilterManager.h>

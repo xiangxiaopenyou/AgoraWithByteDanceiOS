@@ -18,26 +18,16 @@ extern "C" void initGL();
 extern "C" void releaseGL();
 extern "C" void makeCurrent();
 extern "C" void dataCallback(const char * data);
-extern "C" void logInfoMessage(std::string message);
 extern "C" void logMessage(int retval, std::string message);
 
 namespace {
 std::string formatLog(const char* fmt, ...) {
-  int size = 512;
-  char* buffer = 0;
-  buffer = new char[size];
+  static char buffer[1024];
   va_list vl;
   va_start(vl, fmt);
-  int nsize = vsnprintf(buffer, size, fmt, vl);
-  if(size<=nsize){ //fail delete buffer and try again
-    delete[] buffer;
-    buffer = 0;
-    buffer = new char[nsize+1]; //+1 for /0
-    nsize = vsnprintf(buffer, size, fmt, vl);
-  }
+  vsnprintf(buffer, 1024, fmt, vl);
   std::string ret(buffer);
   va_end(vl);
-  delete[] buffer;
   return ret;
 }
 }
@@ -106,21 +96,18 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
     log = formatLog("BDProcessor::processEffect create effect handle failed ! %d", ret);
     logMessage(ret, log);
     
-#if defined __APPLE__
     ret = bef_effect_ai_check_license(byteEffectHandler_, licensePath_.c_str());
-#endif
-    log = formatLog("BDProcessor::processEffect check license failed, %d path: %s",
-                    ret, licensePath_.c_str());
     
+    log = formatLog("BDProcessor::processEffect check license failed, %d path: %s",  ret, licensePath_.c_str());
     logMessage(ret, log);
     
     ret = bef_effect_ai_init(byteEffectHandler_, 0, 0, modelDir_.c_str(), "");
-    log = formatLog("BDProcessor::processEffect init effect handler failed, %d model path: %s",
-                    ret, modelDir_.c_str());
+    
+    log = formatLog("BDProcessor::processEffect init effect handler failed, %d model path: %s", ret, modelDir_.c_str());
     logMessage(ret, log);
     ret = bef_effect_ai_composer_set_mode(byteEffectHandler_, 1, 0);
-    log = formatLog("BDProcessor::processEffect set composer mode failed %d",
-                    ret);
+    
+    log = formatLog("BDProcessor::processEffect set composer mode failed %d", ret);
     logMessage(ret, log);
   }
   
@@ -130,22 +117,18 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
       const char *nodes[] = {};
       ret = bef_effect_ai_composer_set_nodes(byteEffectHandler_,
                                              nodes, 0);
-      log = formatLog("BDProcessor::processEffect composer set nodes to empty failed ! %d",
-                      ret);
+      log = formatLog("BDProcessor::processEffect composer set nodes to empty failed ! %d", ret);
       logMessage(ret, log);
     } else {
       ret = bef_effect_ai_composer_set_nodes(byteEffectHandler_,
                                              (const char **) aiNodes_, aiNodeCount_);
-      log = formatLog("BDProcessor::processEffect composer set nodes failed ! %d",
-                      ret);
-      
+      log = formatLog("BDProcessor::processEffect composer set nodes failed ! %d", ret);
+      logMessage(ret, log);
       for (SizeType i = 0; i < aiNodeCount_; i++) {
         ret = bef_effect_ai_composer_update_node(byteEffectHandler_, aiNodes_[i],
                                                  aiNodeKeys_[i].c_str(),
                                                  aiNodeIntensities_[i]);
-        log = formatLog("BDProcessor::processEffect update composer failed %d %s %s %f",
-                        ret, aiNodeKeys_[i].c_str(), aiNodes_[i],
-                        aiNodeIntensities_[i]);
+        log = formatLog("BDProcessor::processEffect update composer failed %d %s %s %f", ret, aiNodeKeys_[i].c_str(), aiNodes_[i], aiNodeIntensities_[i]);
         logMessage(ret, log);
       }
     }
@@ -159,8 +142,7 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
   bef_effect_result_t ret;
   if (faceStickerEnabled_) {
     ret = bef_effect_ai_set_effect(byteEffectHandler_, faceStickerItemPath_.c_str());
-    log = formatLog("BDProcessor::updateEffect set sticker effect failed %d",
-                    ret);
+    log = formatLog("BDProcessor::updateEffect set sticker effect failed %d", ret);
     logMessage(ret, log);
   } else {
     ret = bef_effect_ai_set_effect(byteEffectHandler_, "");
@@ -173,15 +155,13 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
                                        BEF_AI_PIX_FMT_RGBA8888, capturedFrame.width,
                                        capturedFrame.height, capturedFrame.yStride * 4,
                                        timestamp);
-  log = formatLog("BDProcessor::updateEffect ai algorithm buffer failed %d",
-                  ret);
+  log = formatLog("BDProcessor::updateEffect ai algorithm buffer failed %d", ret);
   logMessage(ret, log);
   ret = bef_effect_ai_process_buffer(byteEffectHandler_, rgbaBuffer_,
                                      BEF_AI_PIX_FMT_RGBA8888, capturedFrame.yStride,
                                      capturedFrame.height, capturedFrame.yStride * 4,
                                      rgbaBuffer_, BEF_AI_PIX_FMT_RGBA8888, timestamp);
-  log = formatLog("BDProcessor::updateEffect ai process buffer failed %d",
-                  ret);
+  log = formatLog("BDProcessor::updateEffect ai process buffer failed %d", ret);
   logMessage(ret, log);
   
   cvt_rgba2yuv(rgbaBuffer_, yuvBuffer_, BEF_AI_PIX_FMT_YUV420P, capturedFrame.yStride,
@@ -202,14 +182,10 @@ void BDProcessor::processFaceDetect() {
     ret = bef_effect_ai_face_detect_create(
                                            BEF_DETECT_SMALL_MODEL | BEF_DETECT_FULL | BEF_DETECT_MODE_VIDEO,
                                            faceDetectModelPath_.c_str(), &faceDetectHandler_);
-    log = formatLog("BDProcessor::processFaceDetect create face detect handle failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processFaceDetect create face detect handle failed ! %d", ret);
     logMessage(ret, log);
-#if defined __APPLE__
     ret = bef_effect_ai_face_check_license(faceDetectHandler_, licensePath_.c_str());
-#endif
-    log = formatLog("BDProcessor::processFaceDetect check_license face detect failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processFaceDetect check_license face detect failed ! %d", ret);
     logMessage(ret, log);
     
     ret = bef_effect_ai_face_detect_setparam(faceDetectHandler_,
@@ -223,16 +199,11 @@ void BDProcessor::processFaceDetect() {
     bef_effect_result_t ret;
     ret = bef_effect_ai_face_attribute_create(0, faceAttributeModelPath_.c_str(),
                                               &faceAttributesHandler_);
-    log = formatLog("BDProcessor::processFaceDetect create face attribute handle failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processFaceDetect create face attribute handle failed ! %d", ret);
     logMessage(ret, log);
     
-#if defined __APPLE__
     ret = bef_effect_ai_face_attribute_check_license(faceAttributesHandler_, licensePath_.c_str());
-#endif
-    
-    log = formatLog("BDProcessor::processFaceDetect check_license face attribute failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processFaceDetect check_license face attribute failed ! %d", ret);
     logMessage(ret, log);
   }
   
@@ -297,43 +268,27 @@ void BDProcessor::processHandDetect() {
     bef_effect_result_t ret;
     
     ret = bef_effect_ai_hand_detect_create(&handDetectHandler_, 0);
-    log = formatLog("BDProcessor::processHandDetect create hand detect handle failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processHandDetect create hand detect handle failed ! %d", ret);
     logMessage(ret, log);
-#if defined __APPLE__
     ret = bef_effect_ai_hand_check_license(handDetectHandler_, licensePath_.c_str());
-#endif
-    log = formatLog("BDProcessor::processHandDetect check_license hand detect failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processHandDetect check_license hand detect failed ! %d", ret);
     logMessage(ret, log);
     ret = bef_effect_ai_hand_detect_setmodel(handDetectHandler_,
                                              BEF_AI_HAND_MODEL_DETECT,
                                              handDetectModelPath_.c_str());
-    log = formatLog("BDProcessor::processHandDetect set hand detect model failed !");
-    logInfoMessage(log);
     ret = bef_effect_ai_hand_detect_setmodel(handDetectHandler_,
                                              BEF_AI_HAND_MODEL_BOX_REG,
                                              handBoxModelPath_.c_str());
-    log = formatLog("BDProcessor::processHandDetect set hand box model failed !");
-    logInfoMessage(log);
     ret = bef_effect_ai_hand_detect_setmodel(handDetectHandler_,
                                              BEF_AI_HAND_MODEL_GESTURE_CLS,
                                              handGestureModelPath_.c_str());
-    log = formatLog("BDProcessor::processHandDetect set hand gesture model failed !");
-    logInfoMessage(log);
     ret = bef_effect_ai_hand_detect_setmodel(handDetectHandler_,
                                              BEF_AI_HAND_MODEL_KEY_POINT,
                                              handKPModelPath_.c_str());
-    log = formatLog("BDProcessor::processHandDetect set hand key points model failed !");
-    logInfoMessage(log);
     ret = bef_effect_ai_hand_detect_setparam(handDetectHandler_, BEF_HAND_MAX_HAND_NUM,
                                              2);
-    log = formatLog("BDProcessor::processHandDetect set max hand num failed !");
-    logInfoMessage(log);
     ret = bef_effect_ai_hand_detect_setparam(handDetectHandler_,
                                              BEF_HNAD_ENLARGE_FACTOR_REG, 2.0);
-    log = formatLog("BDProcessor::processHandDetect set hand enlarge factor failed !");
-    logInfoMessage(log);
   }
   
   bef_ai_hand_info handInfo;
@@ -381,14 +336,10 @@ void BDProcessor::processLightDetect() {
     
     ret = bef_effect_ai_lightcls_create(&lightDetectHandler_,
                                         lightDetectModelPath_.c_str(), 5);
-    log = formatLog("BDProcessor::processLightDetect create face detect handle failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processLightDetect create face detect handle failed ! %d", ret);
     logMessage(ret, log);
-#if defined __APPLE__
     ret = bef_effect_ai_lightcls_check_license(lightDetectHandler_, licensePath_.c_str());
-#endif
-    log = formatLog("BDProcessor::processLightDetect check_license light detect failed ! %d",
-                    ret);
+    log = formatLog("BDProcessor::processLightDetect check_license light detect failed ! %d", ret);
     logMessage(ret, log);
   }
   

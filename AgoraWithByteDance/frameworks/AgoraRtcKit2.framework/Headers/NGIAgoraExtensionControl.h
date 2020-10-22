@@ -7,17 +7,16 @@
 // of Agora.io.
 
 #pragma once  // NOLINT(build/header_guard)
-#include <memory>
-#include <string>
 #include "AgoraBase.h"
 #include "AgoraRefPtr.h"
 #include "IAgoraLog.h"
 #include "NGIAgoraVideoFrame.h"
-#include "NGIAgoraMediaNodeFactory.h"
-#include "NGIAgoraExtensionVideoFilter.h"
+#include "NGIAgoraMediaNode.h"
 
 namespace agora {
 namespace rtc {
+
+class IExtensionControl;
 
 /**
  * Interfaces for Extension Provider
@@ -38,75 +37,41 @@ namespace rtc {
  */
 class IExtensionProvider : public RefCountInterface {
  public:
-  virtual std::string name() const { return std::string{}; };
-  virtual agora_refptr<IAudioFilter> createAudioFilter(const char* name) = 0;
-  virtual agora_refptr<IVideoFilter> createVideoFilter(const char* name) = 0;
-  virtual agora_refptr<IVideoSinkBase> createVideoSink(const char* name) = 0;
+  enum PROVIDER_TYPE {
+    LOCAL_AUDIO_FILTER,
+    REMOTE_AUDIO_FILTER,
+    LOCAL_VIDEO_FILTER,
+    REMOTE_VIDEO_FILTER,
+    LOCAL_VIDEO_SINK,
+    REMOTE_VIDEO_SINK,
+    UNKNOWN,
+  };
+
+  virtual PROVIDER_TYPE getProviderType() {
+    return UNKNOWN;
+  }
+
+  virtual agora_refptr<IAudioFilter> createAudioFilter(const char* filter_id, IExtensionControl* ctrl) {
+    return NULL;
+  }
+
+  virtual agora_refptr<IVideoFilter> createVideoFilter(const char* filter_id, IExtensionControl* ctrl) {
+    return NULL;
+  }
+
+  virtual agora_refptr<IVideoSinkBase> createVideoSink(const char* filter_id, IExtensionControl* ctrl) {
+    return NULL;
+  }
 
  protected:
   ~IExtensionProvider() {}
 };
-
-class IExtensionEventDelegate {
-  public:
-    virtual ~IExtensionEventDelegate() = default;
-    virtual void fireEvent(const char* key, const char* json_value) = 0;
-};
-using ExtensionEventDelegateDeleter = void(*)(IExtensionEventDelegate*);
 
 /**
  * Interface for handling agora extensions
  */
 class IExtensionControl {
  public:
-  /**
-   * Agora Extension Capabilities
-   */
-  struct Capabilities {
-    bool audio;
-    bool video;
-  };
-
-  /**
-   * Get the capabilities of agora extensions
-   * @param capabilities current supported agora extension features
-   */
-  virtual void getCapabilities(Capabilities& capabilities) = 0;
-
-  virtual int registerPreEncodeVideoFilterProvider(const char* provider_id,
-    IExtensionVideoFilterProvider* provider, ExtensionVideoFilterProviderDeleter providerDeleter,
-    IExtensionEventDelegate* eventDelegate, ExtensionEventDelegateDeleter eventDelegateDeleter) = 0;
-
-  virtual int registerPostDecodeVideoFilterProvider(const char* provider_id,
-    IExtensionVideoFilterProvider* provider, ExtensionVideoFilterProviderDeleter providerDeleter,
-    IExtensionEventDelegate* eventDelegate, ExtensionEventDelegateDeleter eventDelegateDeleter) = 0;
-
-  /**
-   * This method registers an extension provider to SDK.
-   * @param vendor_name name of the vendor that identifies the provider
-   * @param provider extension provider implemented by vendor
-   * @return
-   * - 0:  if succeeds
-   * - <0: failure
-   */
-  virtual int registerExtensionProvider(
-    const char* vendor_name, agora::agora_refptr<agora::rtc::IExtensionProvider> provider) = 0;
-  
-  /**
-   * This method unregisters the extension provider from SDK.
-   * @param vendor_name name of the vendor that identifies the provider
-   * @return
-   * - 0: if succeeds
-   * - <0: failure
-   */
-  virtual int unregisterExtensionProvider(const char* vendor_name) = 0;
-
-  virtual int setExtensionProperty(const char* vendor, const char* name, const char* key,
-                                    const char* json_value) = 0;
-
-  virtual int getExtensionProperty(const char* vendor, const char* name, const char* key,
-                                    const char* json_value, int size) = 0;
-
   /**
    * This method creates an IVideoFrame object with specified type, format, width and height
    * @return
@@ -149,6 +114,8 @@ class IExtensionControl {
    * - <0, if error happens
    */
   virtual int log(commons::LOG_LEVEL level, const char* message) = 0;
+
+  virtual int fireEvent(const char* provider_id, const char* filter_id, const char* event_key, const char* event_json_str) = 0;
 
  protected:
   virtual ~IExtensionControl() {}

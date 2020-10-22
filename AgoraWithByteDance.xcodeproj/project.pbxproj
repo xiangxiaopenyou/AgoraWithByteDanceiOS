@@ -18,8 +18,6 @@
 		7E333F4925319AF90007F7C9 /* ComposeMakeup.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E333F4425319AF80007F7C9 /* ComposeMakeup.bundle */; };
 		7E333F4F25319CE20007F7C9 /* VideoChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E333F4E25319CE20007F7C9 /* VideoChatViewController.m */; };
 		7E333F5625319E860007F7C9 /* AppID.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E333F5425319E850007F7C9 /* AppID.m */; };
-		7E4559A92535CF470058742C /* LogUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E4559A72535CF470058742C /* LogUtils.m */; };
-		7E4559AA2535CF470058742C /* LogUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E4559A82535CF470058742C /* LogUtils.h */; };
 		7E7492A725184A1F00CA5E4F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7492A625184A1F00CA5E4F /* AppDelegate.m */; };
 		7E7492AA25184A1F00CA5E4F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7492A925184A1F00CA5E4F /* SceneDelegate.m */; };
 		7E7492B025184A1F00CA5E4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E7492AE25184A1F00CA5E4F /* Main.storyboard */; };
@@ -69,8 +67,8 @@
 		7E74964A25187EE600CA5E4F /* bef_effect_ai_hairparser.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E74961525187EE600CA5E4F /* bef_effect_ai_hairparser.h */; };
 		7E74965B251886F300CA5E4F /* BDVideoFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E749659251886F300CA5E4F /* BDVideoFilter.h */; };
 		7E74965C251886F300CA5E4F /* BDVideoFilter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7E74965A251886F300CA5E4F /* BDVideoFilter.mm */; };
-		7E74966A25188FC300CA5E4F /* BDVideoFilterProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E74966825188FC300CA5E4F /* BDVideoFilterProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7E74966B25188FC300CA5E4F /* BDVideoFilterProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7E74966925188FC300CA5E4F /* BDVideoFilterProvider.mm */; };
+		7E74966A25188FC300CA5E4F /* BDVideoFilterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E74966825188FC300CA5E4F /* BDVideoFilterManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7E74966B25188FC300CA5E4F /* BDVideoFilterManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7E74966925188FC300CA5E4F /* BDVideoFilterManager.mm */; };
 		7E74984B2518AC2900CA5E4F /* fwd.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498252518AC2900CA5E4F /* fwd.h */; };
 		7E74984C2518AC2900CA5E4F /* memorystream.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498262518AC2900CA5E4F /* memorystream.h */; };
 		7E74984D2518AC2900CA5E4F /* reader.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498272518AC2900CA5E4F /* reader.h */; };
@@ -106,6 +104,8 @@
 		7E74986B2518AC2900CA5E4F /* pointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498472518AC2900CA5E4F /* pointer.h */; };
 		7E7498812518AF8200CA5E4F /* BDErrorCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E7498762518AE3200CA5E4F /* BDErrorCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7E7498942518C6E700CA5E4F /* libeffect-sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7498932518C6E700CA5E4F /* libeffect-sdk.a */; platformFilter = ios; };
+		7E8E417A254052C400C32E05 /* BDVideoFilterProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E8E4178254052C400C32E05 /* BDVideoFilterProvider.h */; };
+		7E8E417B254052C400C32E05 /* BDVideoFilterProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7E8E4179254052C400C32E05 /* BDVideoFilterProvider.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -160,8 +160,6 @@
 		7E333F4E25319CE20007F7C9 /* VideoChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoChatViewController.m; sourceTree = "<group>"; };
 		7E333F5425319E850007F7C9 /* AppID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppID.m; sourceTree = "<group>"; };
 		7E333F5525319E850007F7C9 /* AppID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppID.h; sourceTree = "<group>"; };
-		7E4559A72535CF470058742C /* LogUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogUtils.m; sourceTree = "<group>"; };
-		7E4559A82535CF470058742C /* LogUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogUtils.h; sourceTree = "<group>"; };
 		7E7492A225184A1F00CA5E4F /* AgoraWithByteDance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraWithByteDance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E7492A525184A1F00CA5E4F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7E7492A625184A1F00CA5E4F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -219,8 +217,8 @@
 		7E74961525187EE600CA5E4F /* bef_effect_ai_hairparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bef_effect_ai_hairparser.h; sourceTree = "<group>"; };
 		7E749659251886F300CA5E4F /* BDVideoFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDVideoFilter.h; sourceTree = "<group>"; };
 		7E74965A251886F300CA5E4F /* BDVideoFilter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BDVideoFilter.mm; sourceTree = "<group>"; };
-		7E74966825188FC300CA5E4F /* BDVideoFilterProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDVideoFilterProvider.h; sourceTree = "<group>"; };
-		7E74966925188FC300CA5E4F /* BDVideoFilterProvider.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BDVideoFilterProvider.mm; sourceTree = "<group>"; };
+		7E74966825188FC300CA5E4F /* BDVideoFilterManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDVideoFilterManager.h; sourceTree = "<group>"; };
+		7E74966925188FC300CA5E4F /* BDVideoFilterManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BDVideoFilterManager.mm; sourceTree = "<group>"; };
 		7E7498252518AC2900CA5E4F /* fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fwd.h; sourceTree = "<group>"; };
 		7E7498262518AC2900CA5E4F /* memorystream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memorystream.h; sourceTree = "<group>"; };
 		7E7498272518AC2900CA5E4F /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
@@ -256,6 +254,8 @@
 		7E7498472518AC2900CA5E4F /* pointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pointer.h; sourceTree = "<group>"; };
 		7E7498762518AE3200CA5E4F /* BDErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDErrorCode.h; sourceTree = "<group>"; };
 		7E7498932518C6E700CA5E4F /* libeffect-sdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libeffect-sdk.a"; sourceTree = "<group>"; };
+		7E8E4178254052C400C32E05 /* BDVideoFilterProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDVideoFilterProvider.h; sourceTree = "<group>"; };
+		7E8E4179254052C400C32E05 /* BDVideoFilterProvider.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BDVideoFilterProvider.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -392,14 +392,14 @@
 				7E7495DB25187EE600CA5E4F /* lib */,
 				7E7492E525184A7E00CA5E4F /* ByteDanceExtension.h */,
 				7E7492E625184A7E00CA5E4F /* Info.plist */,
-				7E4559A82535CF470058742C /* LogUtils.h */,
-				7E4559A72535CF470058742C /* LogUtils.m */,
 				7E7495D125187DB900CA5E4F /* BDProcessor.h */,
 				7E7495D225187DB900CA5E4F /* BDProcessor.mm */,
 				7E749659251886F300CA5E4F /* BDVideoFilter.h */,
 				7E74965A251886F300CA5E4F /* BDVideoFilter.mm */,
-				7E74966825188FC300CA5E4F /* BDVideoFilterProvider.h */,
-				7E74966925188FC300CA5E4F /* BDVideoFilterProvider.mm */,
+				7E8E4178254052C400C32E05 /* BDVideoFilterProvider.h */,
+				7E8E4179254052C400C32E05 /* BDVideoFilterProvider.mm */,
+				7E74966825188FC300CA5E4F /* BDVideoFilterManager.h */,
+				7E74966925188FC300CA5E4F /* BDVideoFilterManager.mm */,
 				7E7498762518AE3200CA5E4F /* BDErrorCode.h */,
 			);
 			path = ByteDanceExtension;
@@ -536,6 +536,7 @@
 				7E74963C25187EE600CA5E4F /* bef_effect_ai_face_clustering.h in Headers */,
 				7E74964325187EE600CA5E4F /* bef_effect_ai_api.h in Headers */,
 				7E74963F25187EE600CA5E4F /* bef_effect_ai_dynamic_action.h in Headers */,
+				7E8E417A254052C400C32E05 /* BDVideoFilterProvider.h in Headers */,
 				7E74964925187EE600CA5E4F /* bef_effect_ai_face_detect.h in Headers */,
 				7E74984B2518AC2900CA5E4F /* fwd.h in Headers */,
 				7E74984C2518AC2900CA5E4F /* memorystream.h in Headers */,
@@ -558,7 +559,6 @@
 				7E74964225187EE600CA5E4F /* bef_effect_ai_hand.h in Headers */,
 				7E7498632518AC2900CA5E4F /* filewritestream.h in Headers */,
 				7E7498662518AC2900CA5E4F /* allocators.h in Headers */,
-				7E4559AA2535CF470058742C /* LogUtils.h in Headers */,
 				7E7498672518AC2900CA5E4F /* writer.h in Headers */,
 				7E7498542518AC2900CA5E4F /* ieee754.h in Headers */,
 				7E7498522518AC2900CA5E4F /* istreamwrapper.h in Headers */,
@@ -573,7 +573,7 @@
 				7E74964825187EE600CA5E4F /* bef_effect_ai_skeleton.h in Headers */,
 				7E74985D2518AC2900CA5E4F /* dtoa.h in Headers */,
 				7E74963D25187EE600CA5E4F /* bef_effect_ai_face_verify.h in Headers */,
-				7E74966A25188FC300CA5E4F /* BDVideoFilterProvider.h in Headers */,
+				7E74966A25188FC300CA5E4F /* BDVideoFilterManager.h in Headers */,
 				7E7495D325187DB900CA5E4F /* BDProcessor.h in Headers */,
 				7E74963E25187EE600CA5E4F /* bef_effect_ai_pet_face.h in Headers */,
 				7E74964625187EE600CA5E4F /* bef_effect_ai_human_distance.h in Headers */,
@@ -781,9 +781,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E4559A92535CF470058742C /* LogUtils.m in Sources */,
+				7E8E417B254052C400C32E05 /* BDVideoFilterProvider.mm in Sources */,
 				7E7495D425187DB900CA5E4F /* BDProcessor.mm in Sources */,
-				7E74966B25188FC300CA5E4F /* BDVideoFilterProvider.mm in Sources */,
+				7E74966B25188FC300CA5E4F /* BDVideoFilterManager.mm in Sources */,
 				7E74965C251886F300CA5E4F /* BDVideoFilter.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

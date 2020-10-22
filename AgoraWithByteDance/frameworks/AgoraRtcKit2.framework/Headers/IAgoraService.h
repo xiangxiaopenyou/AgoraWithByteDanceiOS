@@ -7,6 +7,7 @@
 
 #include "AgoraBase.h"
 #include "AgoraOptional.h"
+#include "NGIAgoraExtensionControl.h"
 
 namespace agora {
 namespace rtc {
@@ -33,7 +34,7 @@ class IMediaNodeFactory;
 class IRecordingDeviceSource;
 class IRtmpStreamingService;
 class IMediaPacketSender;
-class IExtensionControl;
+class IMediaExtensionObserver;
 
 class IRtcEngine;
 /**
@@ -703,11 +704,30 @@ class IAgoraService {
   virtual rtm::IRtmService* createRtmService() = 0;
 
   /**
+   * Add an extension.
+   *
+   * @param id id for extension, e.g. agora.beauty.
+   * @param provider factory to create extension instance.
+   * @param observer event subscriber of extension.
+   *
    * @return
-   * - The pointer to \ref agora::rtc::IExtensionControl "IExtensionControl", if the method call succeeds.
-   * - A null pointer, if the method call fails.
+   * - 0: Success.
+   * - < 0: Failure.
    */
-  virtual rtc::IExtensionControl* getExtensionControl() = 0;
+  virtual int addExtensionProvider(const char* id,
+    agora_refptr<rtc::IExtensionProvider> provider,
+    agora_refptr<rtc::IMediaExtensionObserver> observer = NULL) = 0;
+
+  /**
+   * Remove an extension.
+   *
+   * @param id id for extension, e.g. agora.beauty.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int removeExtensionProvider(const char* id) = 0;
 
  protected:
   virtual ~IAgoraService() {}

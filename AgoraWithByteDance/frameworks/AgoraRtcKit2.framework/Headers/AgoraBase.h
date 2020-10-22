@@ -1776,6 +1776,20 @@ struct VideoEncoderConfiguration {
         degradationPreference(MAINTAIN_QUALITY),
         mirrorMode(VIDEO_MIRROR_MODE_DISABLED) {}
 };
+
+enum CAMERA_DIRECTION {
+  /** The rear camera. */
+  CAMERA_REAR = 0,
+  /** The front camera. */
+  CAMERA_FRONT = 1,
+};
+
+/** Camera capturer configuration.*/
+struct CameraCapturerConfiguration {
+  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
+  CAMERA_DIRECTION cameraDirection;
+};
+
 /**
  * The definition of the of SimulcastStreamConfig struct.
  */

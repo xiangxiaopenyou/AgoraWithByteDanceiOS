@@ -1621,38 +1621,56 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  */
 - (int)setDefaultMuteAllRemoteAudioStreams:(BOOL)mute;
 
-- (int)registerMediaNodeProviderWithVendor:(NSString * _Nonnull)vendor
-                                  provider:(long long)provider;
+/**
+ * Enable/Disable extension.
+ *
+ * @param vendor id for extension, e.g. agora.beauty.
+ * @param enabled enable or disable.
+ * - true: enable.
+ * - false: disable.
+ *
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+- (int)enableExtensionWithVendor:(NSString * __nonnull)vendor enabled:(BOOL)enabled;
 
-- (int)unregisterMediaNodeProviderWithVendor:(NSString * _Nonnull)vendor;
+/**
+ * Check if an extension is enabled or not.
+ *
+ * @param vendor id for extension, e.g. agora.beauty.
+ *
+ * @return
+ * - true: Enabled.
+ * - false: Disabled.
+ */
+- (bool)isExtensionEnabledWithVendor:(NSString * __nonnull)vendor;
 
-- (int)enableLocalVideoFilter:(NSString * _Nonnull) name
-                       vendor:(NSString * _Nonnull)vendor
-                       enable:(bool)enable;
+/**
+ * Set extension specific property.
+ *
+ * @param vendor id for extension, e.g. agora.beauty.
+ * @param key key for the property.
+ * @param value property value.
+ *
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+- (int)setExtensionPropertyWithVendor:(NSString * __nonnull)vendor key:(NSString * __nonnull)key value:(NSString * __nonnull)value;
 
-- (int)setLocalVideoFilterProperty:(NSString * _Nonnull) name
-                            vendor:(NSString * _Nonnull) vendor
-                               key:(NSString * _Nonnull) key
-                             value:(NSValue * _Nullable) value;
-
-- (int)getLocalVideoFilterProperty:(NSString * _Nonnull) name
-                            vendor:(NSString * _Nonnull) vendor
-                               key:(NSString * _Nonnull) key
-                             value:(NSValue * _Nullable) value;
-
-- (int)enableRemoteVideoFilter:(NSString * _Nonnull) name
-                        vendor:(NSString * _Nonnull)vendor
-                        enable:(bool)enable;
-
-- (int)setRemoteVideoFilterProperty:(NSString * _Nonnull) name
-                             vendor:(NSString * _Nonnull) vendor
-                                key:(NSString * _Nonnull) key
-                              value:(NSValue * _Nullable) value;
-
-- (int)getRemoteVideoFilterProperty:(NSString * _Nonnull) name
-                             vendor:(NSString * _Nonnull) vendor
-                                key:(NSString * _Nonnull) key
-                              value:(NSValue * _Nullable) value;
+/**
+ * Get extension specific property.
+ *
+ * @param vendor id for extension, e.g. agora.beauty.
+ * @param key key for the property.
+ * @param value buffer to store property value, out param.
+ *
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+- (int)getExtensionPropertyWithVendor:(NSString * __nonnull)vendor key:(NSString * __nonnull)key value:(NSString * _Nullable * _Nonnull)value;
 
 #if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
 
@@ -1825,6 +1843,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * - 0: Success.
  * - < 0: Failure.
  */
+
 - (int)startPreview;
 
 /**
@@ -3205,6 +3224,19 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * - <0: Failure.
  */
 - (int)switchCamera;
+
+/** Sets the camera capture configuration.
+ * @note Call this method before enabling the local camera.
+ * That said, you can call this method before calling \ref IRtcEngine::joinChannel "joinChannel",
+ * \ref IRtcEngine::enableVideo "enableVideo", or \ref IRtcEngine::enableLocalVideo "enableLocalVideo",
+ * depending on which method you use to turn on your local camera.
+ *
+ * @param config Sets the camera capturer configuration. See AgoraCameraCapturerConfiguration.
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+- (int)setCameraCapturerConfiguration:(AgoraCameraCapturerConfiguration * _Nullable)config;
 #endif
 
 

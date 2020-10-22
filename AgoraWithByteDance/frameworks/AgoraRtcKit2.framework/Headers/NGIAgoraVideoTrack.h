@@ -37,7 +37,7 @@ class IVideoTrack : public RefCountInterface {
    * - `true`: The video filter is added successfully.
    * - `false`: The video filter fails to be added.
    */
-  virtual bool addVideoFilter(agora_refptr<IVideoFilter> filter) = 0;
+  virtual bool addVideoFilter(agora_refptr<IVideoFilter> filter, const char* id = NULL) = 0;
   /**
    * Removes the video filter added by `addVideoFilter` from the video track.
    *
@@ -46,7 +46,7 @@ class IVideoTrack : public RefCountInterface {
    * - `true`: The video filter is removed successfully.
    * - `false`: The video filter fails to be removed.
    */
-  virtual bool removeVideoFilter(agora_refptr<IVideoFilter> filter) = 0;
+  virtual bool removeVideoFilter(agora_refptr<IVideoFilter> filter, const char* id = NULL) = 0;
 
   /**
    * Adds a video renderer to the video track.
@@ -73,6 +73,38 @@ class IVideoTrack : public RefCountInterface {
    * - `false`: The video renderer fails to be removed.
    */
   virtual bool removeRenderer(agora_refptr<IVideoSinkBase> videoRenderer, media::IVideoFrameObserver::VIDEO_OBSERVER_POSITION position = media::IVideoFrameObserver::POSITION_POST_FILTERS) = 0;
+
+  /**
+   * Enable / Disable specified video filter
+   * @param id id of the filter
+   * @param enable enable / disable the filter with given id
+   * @return
+   * - 0: success
+   * - <0: failure
+   */
+  virtual int enableVideoFilter(const char* id, bool enable) { return -1; }
+
+  /**
+   * set the properties of the specified video filter
+   * @param id id of the filter
+   * @param key key of the property
+   * @param json_value json str value of the property
+   * @return
+   * - 0: success
+   * - <0: failure
+   */
+  virtual int setFilterProperty(const char* id, const char* key, const char* json_value) { return -1; }
+
+  /**
+   * get the properties of the specified video filter
+   * @param id id of the filter
+   * @param key key of the property
+   * @param json_value json str value of the property
+   * @return
+   * - 0: success
+   * - <0: failure
+   */
+  virtual int getFilterProperty(const char* id, const char* key, char* json_value, size_t buf_size) { return -1; }
 
  protected:
   ~IVideoTrack() {}

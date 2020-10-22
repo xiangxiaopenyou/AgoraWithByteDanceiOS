@@ -4,100 +4,110 @@
 // iOS
 namespace ByteDance {
 namespace Extension {
-class BDVideoFilter: public agora::rtc::IExtensionVideoFilter {
+class BDVideoFilter: public agora::rtc::IVideoFilter {
 public:
-  BDVideoFilter(std::shared_ptr<BDProcessor> bdProcessor);
+  BDVideoFilter(agora::agora_refptr<BDProcessor> bdProcessor);
   ~BDVideoFilter();
   
-  bool setProperty(const char* key, const char* json_value) override;
-  unsigned int property(const char* key,
-                        char* json_value_buffer,
-                        unsigned int json_value_buffer_size) const override;
-  bool setExtensionFacility(agora::rtc::IExtensionFacility* facility) override;
-  bool filter(const agora::media::base::VideoFrame& original_frame,
-              agora::media::base::VideoFrame& processed_frame) override;
-
+  virtual size_t setProperty(const char* key, const void* buf, size_t buf_size) override;
+  virtual bool onDataStreamWillStart() override;
+  virtual void onDataStreamWillStop() override;
+  
+  virtual bool adaptVideoFrame(const agora::media::base::VideoFrame& capturedFrame,
+                               agora::media::base::VideoFrame& adaptedFrame) override;
+  
 protected:
   BDVideoFilter() = default;
 private:
-  std::shared_ptr<BDProcessor> bdProcessor_;
+  agora::agora_refptr<BDProcessor> bdProcessor_;
+  bool opengl_released_ = false;
 };
 
 }
 }
 ```
-PS: IExtensionFacility 提供了触发回调事件 & log能力
 
-# 实现AgoraVideoFilterProviderDelegate接口
+# 实现agora::rtc::IExtensionProvider接口
 
 ```
 // iOS
-@interface BDVideoFilterProvider : NSObject <AgoraVideoFilterProviderDelegate>
-+ (instancetype)sharedInstance;
+namespace ByteDance {
+namespace Extension {
+class BDProcessor;
 
-- (void)loadProcessor;
-- (int)setParameter:(NSString *)parameter; // 设置模型加载，美颜，贴纸参数，参数用 json 的方式传输
-@end
-```
-
-AgoraVideoFilterProviderDelegate接口定义如下
-
-```
-/**
- * Position of Video Filter.
- */
-typedef NS_ENUM(NSInteger, AgoraVideoFilterPosition) {
-  /**
-   * 0: Video Filter Position Invalid.
-   */
-  AgoraVideoFilterPositionInvalid = 0,
-  /**
-   * 1: Video Filter Pre Encoder.
-   */
-  AgoraVideoFilterPositionPreEncoder = 1,
-  /**
-   * 2: Video Filter Post Decoder.
-   */
-  AgoraVideoFilterPositionPostDecoder = 2,
+class BDExtensionProvider : public agora::rtc::IExtensionProvider {
+public:
+  BDExtensionProvider(agora::agora_refptr<BDProcessor> processor);
+  ~BDExtensionProvider();
+  
+  virtual agora::rtc::IExtensionProvider::PROVIDER_TYPE getProviderType() override;
+  virtual agora::agora_refptr<agora::rtc::IAudioFilter> createAudioFilter(const char* filter_id, agora::rtc::IExtensionControl* ctrl) override;
+  virtual agora::agora_refptr<agora::rtc::IVideoFilter> createVideoFilter(const char* filter_id, agora::rtc::IExtensionControl* ctrl) override;
+  virtual agora::agora_refptr<agora::rtc::IVideoSinkBase> createVideoSink(const char* filter_id, agora::rtc::IExtensionControl* ctrl) override;
+  int log(agora::commons::LOG_LEVEL level, const char* message);
+  int fireEvent(const char *vendor, const char* event_json_str);
+protected:
+  BDExtensionProvider() = default;
+private:
+  agora::agora_refptr<agora::rtc::IVideoFilter> video_filter_;
+  agora::agora_refptr<BDProcessor> processor_;
+  agora::rtc::IExtensionControl* extension_control_;
+  char* filter_id_;
 };
 
-/**
- * Protocol of Video Filter Provider
- * It needs implement by Video Filter Vendor
- */
-@protocol AgoraVideoFilterProviderDelegate <NSObject>
+}
+}
+```
 
-/**
- * Name of Provider
- */
-- (NSString * _Nonnull)name;
+提供BDVideoFilterManager，定义如下
 
-/**
- * Version of Provider
- */
-- (NSString * _Nonnull)version;
+```
+NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Vendor of Provider,
- */
-- (NSString * _Nonnull)vendor;
+@class BDVideoExtensionObject;
 
-/**
- * VideoFilter Pointer of Provider
- * It needs implement all interface of agora::rtc::IExtensionVideoFilter
- */
-- (void* _Nullable)createVideoFilter;
+@interface BDVideoFilterManager : NSObject
++ (instancetype)sharedInstance;
 
-/**
- * VideoFilter Pointer Deleter of Provider
- */
-- (bool)destroyVideoFilter:(void * _Nullable)videoFilter;
-
-/**
- * Position of Video Filter
- */
-- (AgoraVideoFilterPosition)videoFilterPosition;
++ (NSString * __nonnull)vendorName; //插件id
+- (BDVideoExtensionObject * __nonnull)mediaFilterExtension; //实现了AgoraMediaFilterExtensionDelegate接口的对象
+- (void)loadPlugin; // 加载插件
+- (int)setParameter:(NSString * __nullable)parameter; //配置插件参数
 @end
+
+NS_ASSUME_NONNULL_END
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface BDVideoExtensionObject : NSObject <AgoraMediaFilterExtensionDelegate>
+@property (copy, nonatomic) NSString * __nonnull vendorName; //插件id
+@property (assign, nonatomic) void * __nullable mediaFilterProvider; //实现了agora::rtc::IExtensionProvider接口对象
+@property (weak, nonatomic) id<AgoraMediaFilterEventDelegate> __nullable observer; //实现了AgoraMediaFilterEventDelegate接口对象
+
+@end
+
+NS_ASSUME_NONNULL_END
+```
+
+AgoraMediaFilterExtensionDelegate接口定义如下
+
+```
+@protocol AgoraMediaFilterExtensionDelegate <NSObject>
+
+- (NSString * __nonnull)vendor; //插件id
+
+- (void * __nullable)mediaFilterProvider; //插件id
+@optional
+- (id<AgoraMediaFilterEventDelegate> __nullable)mediaFilterObserver; //实现了AgoraMediaFilterEventDelegate接口对象
+@end
+```
+
+AgoraMediaFilterEventDelegate接口定义如下
+
+```
+- (void)onEvent:(NSString * __nullable)vendor
+            key:(NSString * __nullable)key
+     json_value:(NSString * __nullable)json_value;
 ```
 
 PS: 提供的framework需要使用SDK Cpp相关Interface，需要引入AgoraRtcKit2.framework, 不需要Emedded & Sign，只需要Do Not Embedded，因为最终的App负责嵌入AgoraRtcKit2.framework

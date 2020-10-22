@@ -10,62 +10,50 @@
 
 namespace ByteDance {
 namespace Extension {
-BDVideoFilter::BDVideoFilter(std::shared_ptr<BDProcessor> bdProcessor) {
-  bdProcessor_ = bdProcessor;
-  bdProcessor_->initOpenGL();
-}
+BDVideoFilter::BDVideoFilter(agora::agora_refptr<BDProcessor> bdProcessor): bdProcessor_(bdProcessor) {}
 
 BDVideoFilter::~BDVideoFilter() {
-  if (bdProcessor_) {
+  if (bdProcessor_ && !opengl_released_) {
     bdProcessor_->releaseOpenGL();
   }
 }
 
-bool BDVideoFilter::setProperty(const char* key, const char* json_value) {
-  if (!json_value) {
-    return false;
+size_t BDVideoFilter::setProperty(const char* key, const void* buf, size_t buf_size) {
+  if (!buf) {
+    return -1;
   }
   
   if (bdProcessor_) {
+    const char *json_value = static_cast<const char *>(buf);
     std::string parameter(json_value);
-    bdProcessor_->setParameters(parameter);
-    return true;
+    return bdProcessor_->setParameters(parameter);
   }
   
+  return -1;
+}
+
+bool BDVideoFilter::onDataStreamWillStart() {
+  if (bdProcessor_) {
+    bdProcessor_->initOpenGL();
+    return true;
+  }
   return false;
 }
 
-unsigned int BDVideoFilter::property(const char* key,
-                                     char* json_value_buffer,
-                                     unsigned int json_value_buffer_size) const {
-  return 0;
-}
-
-bool BDVideoFilter::setExtensionFacility(agora::rtc::IExtensionFacility* facility) {
-  facility_ = facility;
-  return true;
-}
-
-void BDVideoFilter::sendEvent(const char* key, const char* json_value) {
-  if (facility_) {
-    facility_->fireEvent(key, json_value);
-  }
-}
-
-void BDVideoFilter::log(agora::commons::LOG_LEVEL level, const char* message) {
-  if (facility_) {
-    facility_->log(level, message);
-  }
-}
-
-bool BDVideoFilter::filter(const agora::media::base::VideoFrame& original_frame,
-            agora::media::base::VideoFrame& processed_frame) {
+void BDVideoFilter::onDataStreamWillStop() {
   if (bdProcessor_) {
-    bdProcessor_->processFrame(original_frame);
-    processed_frame = original_frame;
+    bdProcessor_->releaseOpenGL();
+    opengl_released_ = true;
+  }
+}
+
+bool BDVideoFilter::adaptVideoFrame(const agora::media::base::VideoFrame& capturedFrame,
+                                    agora::media::base::VideoFrame& adaptedFrame) {
+  if (bdProcessor_) {
+    bdProcessor_->processFrame(capturedFrame);
+    adaptedFrame = capturedFrame;
     return true;
   }
-  
   return false;
 }
 

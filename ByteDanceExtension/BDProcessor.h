@@ -4,19 +4,21 @@
 //
 //  Created by LLF on 2020/9/21.
 //
+#pragma once
 
 #include <thread>
 #include <string>
 #include <mutex>
 #include <vector>
 #include "AgoraRtcKit2/AgoraMediaBase.h"
+#include "AgoraRtcKit2/AgoraRefPtr.h"
 #include "bef_effect_ai_api.h"
 #include "bef_effect_ai_lightcls.h"
 #include "rapidjson.h"
 
 namespace ByteDance {
 namespace Extension {
-class BDProcessor {
+class BDProcessor : public agora::RefCountInterface {
 public:
   bool initOpenGL();
   bool releaseOpenGL();

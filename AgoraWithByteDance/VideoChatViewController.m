@@ -7,11 +7,11 @@
 //
 
 #import "VideoChatViewController.h"
-#import <ByteDanceExtension/BDVideoFilterProvider.h>
+#import <ByteDanceExtension/BDVideoFilterManager.h>
 #import "BDResourceHelper.h"
 #import "AppID.h"
 
-@interface VideoChatViewController() <AgoraVideoFilterEventHandlerDelegate> {
+@interface VideoChatViewController() <AgoraMediaFilterEventDelegate> {
   NSString *faceInfo;
   NSString *handInfo;
   NSString *lightInfo;
@@ -50,15 +50,15 @@
 }
 
 - (void)initializeAgoraEngine {
-  AgoraRtcEngineConfig *config = [AgoraRtcEngineConfig new];
-  config.appId = appID;
-  AgoraVideoFilterExtension *ext = [AgoraVideoFilterExtension new];
-  BDVideoFilterProvider *provider = [BDVideoFilterProvider sharedInstance];
-  [provider loadProcessor];
-  ext.provider = provider;
-  ext.eventHandler = self;
-  config.extensions = @[ext];
-  self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
+  AgoraRtcEngineConfig *cfg = [AgoraRtcEngineConfig new];
+  cfg.appId = appID;
+  BDVideoFilterManager *provider = [BDVideoFilterManager sharedInstance];
+  [provider loadPlugin];
+  BDVideoExtensionObject *obj = [provider mediaFilterExtension];
+  obj.observer = self;
+  cfg.mediaFilterExtensions = @[obj];
+  
+  self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:cfg delegate:self];
 }
 
 - (void)setupVideo {
@@ -251,28 +251,30 @@
   NSError *error;
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&error];
   NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-  [[BDVideoFilterProvider sharedInstance] setParameter:jsonString];
+  [[BDVideoFilterManager sharedInstance] setParameter:jsonString];
 }
 
 - (IBAction)enableEffectTapped:(UIButton *)sender {
   [self enableEffect];
 }
 
-#pragma mark - AgoraVideoFilterEventHandlerDelegate
+#pragma mark - AgoraMediaFilterEventDelegate
 
-- (void)onEvent:(NSString *)key value:(NSString *)value {
-  if ([value containsString:@"plugin.bytedance.face.info"]) {
-    faceInfo = value;
+- (void)onEvent:(NSString *)vendor key:(NSString *)key json_value:(NSString *)json_value {
+  if ([vendor isEqualToString:[BDVideoFilterManager vendorName]]) {
+    if ([json_value containsString:@"plugin.bytedance.face.info"]) {
+      faceInfo = json_value;
+    }
+    if ([json_value containsString:@"plugin.bytedance.hand.info"]) {
+      handInfo = json_value;
+    }
+    if ([json_value containsString:@"plugin.bytedance.light.info"]) {
+      lightInfo = json_value;
+    }
+    
+    NSString* info = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", lightInfo, handInfo, faceInfo];
+    self.infoTextView.text = info;
   }
-  if ([value containsString:@"plugin.bytedance.hand.info"]) {
-    handInfo = value;
-  }
-  if ([value containsString:@"plugin.bytedance.light.info"]) {
-    lightInfo = value;
-  }
-  
-  NSString* info = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", lightInfo, handInfo, faceInfo];
-  self.infoTextView.text = info;
 }
 
 @end

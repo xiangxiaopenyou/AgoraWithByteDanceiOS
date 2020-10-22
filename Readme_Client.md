@@ -4,15 +4,15 @@
 
 ```
 // iOS
-AgoraRtcEngineConfig *config = [AgoraRtcEngineConfig new];
-config.appId = appID;
-AgoraVideoFilterExtension *ext = [AgoraVideoFilterExtension new];
-BDVideoFilterProvider *provider = [BDVideoFilterProvider sharedInstance];//这个provider通过第三方Vendor提供的framework获取
-[provider loadProcessor];
-ext.provider = provider;
-ext.eventHandler = self; // EventHandler为实现了AgoraVideoFilterEventHandlerDelegate接口的对象
-config.extensions = @[ext];
-self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
+AgoraRtcEngineConfig *cfg = [AgoraRtcEngineConfig new];
+cfg.appId = appID;
+BDVideoFilterManager *provider = [BDVideoFilterManager sharedInstance];
+[provider loadPlugin];
+BDVideoExtensionObject *obj = [provider mediaFilterExtension];
+obj.observer = self;
+cfg.mediaFilterExtensions = @[obj];
+
+self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:cfg delegate:self];
 ```
 
 # 注册人脸识别，光线识别，表情识别，手部识别的回调
@@ -20,15 +20,17 @@ self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:config delegate:self];
 ## iOS
 
 ```
-ext.eventHandler = self; // EventHandler为实现了AgoraVideoFilterEventHandlerDelegate接口的对象
+obj.observer = self; // self为实现了AgoraMediaFilterEventDelegate接口的对象
 ```
 
 其中 self 需要实现以下 protocol
 
 ```
 // iOS
-@protocol AgoraVideoFilterEventHandlerDelegate <NSObject>
-- (void)onEvent:(NSString * _Nullable)key value:(NSString * _Nullable)value;
+@protocol AgoraMediaFilterEventDelegate <NSObject>
+- (void)onEvent:(NSString * __nullable)vendor
+            key:(NSString * __nullable)key
+     json_value:(NSString * __nullable)json_value;
 @end
 ```
 # 设置参数
@@ -37,7 +39,7 @@ ext.eventHandler = self; // EventHandler为实现了AgoraVideoFilterEventHandler
 
 ```
 // iOS
-[[BDVideoFilterProvider sharedInstance] setParameter:jsonString];
+[[BDVideoFilterManager sharedInstance] setParameter:jsonString];
 ```
 
 参数解释如下

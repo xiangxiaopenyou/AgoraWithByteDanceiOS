@@ -8,8 +8,7 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 #import "AgoraEnumerates.h"
-#import "AgoraVideoFilterProviderDelegate.h"
-#import "AgoraVideoFilterEventHandlerDelegate.h"
+#import "AgoraMediaFilterExtensionDelegate.h"
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -1026,28 +1025,12 @@ __attribute__((visibility("default"))) @interface AgoraVideoFrame : NSObject
  */
 @end
 
-/**
- * The Video Filter Extension.
- */
-__attribute__((visibility("default"))) @interface AgoraVideoFilterExtension : NSObject
-
-/**
- * The Video Filter Provider.
- */
-@property (strong, nonatomic) id<AgoraVideoFilterProviderDelegate> _Nullable provider;
-/**
- * The Video Filter Event Handler.
- */
-@property (strong, nonatomic) id<AgoraVideoFilterEventHandlerDelegate> _Nullable eventHandler;
-
-@end
-
 __attribute__((visibility("default"))) @interface AgoraRtcEngineConfig: NSObject
  @property (copy, nonatomic) NSString * _Nullable appId;
  @property (assign, nonatomic) AgoraChannelProfile channelProfile;
  @property (assign, nonatomic) AgoraAudioScenario audioScenario;
  @property (assign, nonatomic) AgoraAreaCodeType areaCode;
- @property (copy, nonatomic) NSArray<AgoraVideoFilterExtension *> * _Nullable extensions;
+ @property (copy, nonatomic) NSArray<id<AgoraMediaFilterExtensionDelegate>>* _Nullable mediaFilterExtensions;
 @end
 
 /**
@@ -1161,3 +1144,16 @@ __attribute__((visibility("default"))) @interface AgoraOutputVideoFrame : NSObje
 @property(assign, nonatomic) CVPixelBufferRef _Nullable pixelBuffer;
 
 @end
+
+/** the configuration of camera capturer.
+ */
+#if TARGET_OS_IOS
+__attribute__((visibility("default"))) @interface AgoraCameraCapturerConfiguration: NSObject
+/** The camera direction. See AgoraCameraDirection:
+
+ - AgoraCameraDirectionRear: The rear camera.
+ - AgoraCameraDirectionFront: The front camera.
+ */
+@property (assign, nonatomic) AgoraCameraDirection cameraDirection;
+@end
+#endif
