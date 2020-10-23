@@ -19,11 +19,11 @@ public:
   BDVideoFilter(agora::agora_refptr<BDProcessor> bdProcessor);
   ~BDVideoFilter();
   
-  virtual size_t setProperty(const char* key, const void* buf, size_t buf_size) override;
-  virtual bool onDataStreamWillStart() override;
-  virtual void onDataStreamWillStop() override;
+  size_t setProperty(const char* key, const void* buf, size_t buf_size) override;
+  bool onDataStreamWillStart() override;
+  void onDataStreamWillStop() override;
   
-  virtual bool adaptVideoFrame(const agora::media::base::VideoFrame& capturedFrame,
+  bool adaptVideoFrame(const agora::media::base::VideoFrame& capturedFrame,
                                agora::media::base::VideoFrame& adaptedFrame) override;
   
 protected:

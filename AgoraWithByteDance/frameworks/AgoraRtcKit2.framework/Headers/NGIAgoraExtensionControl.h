@@ -51,15 +51,17 @@ class IExtensionProvider : public RefCountInterface {
     return UNKNOWN;
   }
 
-  virtual agora_refptr<IAudioFilter> createAudioFilter(const char* filter_id, IExtensionControl* ctrl) {
+  virtual void setExtensionControl(IExtensionControl* control) {}
+
+  virtual agora_refptr<IAudioFilter> createAudioFilter(const char* id) {
     return NULL;
   }
 
-  virtual agora_refptr<IVideoFilter> createVideoFilter(const char* filter_id, IExtensionControl* ctrl) {
+  virtual agora_refptr<IVideoFilter> createVideoFilter(const char* id) {
     return NULL;
   }
 
-  virtual agora_refptr<IVideoSinkBase> createVideoSink(const char* filter_id, IExtensionControl* ctrl) {
+  virtual agora_refptr<IVideoSinkBase> createVideoSink(const char* id) {
     return NULL;
   }
 
@@ -72,6 +74,20 @@ class IExtensionProvider : public RefCountInterface {
  */
 class IExtensionControl {
  public:
+  /**
+   * Agora Extension Capabilities
+   */
+  struct Capabilities {
+    bool audio;
+    bool video;
+  };
+
+  /**
+   * Get the capabilities of agora extensions
+   * @param capabilities current supported agora extension features
+   */
+  virtual void getCapabilities(Capabilities& capabilities) = 0;
+
   /**
    * This method creates an IVideoFrame object with specified type, format, width and height
    * @return
@@ -115,7 +131,7 @@ class IExtensionControl {
    */
   virtual int log(commons::LOG_LEVEL level, const char* message) = 0;
 
-  virtual int fireEvent(const char* provider_id, const char* filter_id, const char* event_key, const char* event_json_str) = 0;
+  virtual int fireEvent(const char* id, const char* event_key, const char* event_json_str) = 0;
 
  protected:
   virtual ~IExtensionControl() {}

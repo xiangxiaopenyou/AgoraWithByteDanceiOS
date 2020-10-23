@@ -1636,17 +1636,6 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
 - (int)enableExtensionWithVendor:(NSString * __nonnull)vendor enabled:(BOOL)enabled;
 
 /**
- * Check if an extension is enabled or not.
- *
- * @param vendor id for extension, e.g. agora.beauty.
- *
- * @return
- * - true: Enabled.
- * - false: Disabled.
- */
-- (bool)isExtensionEnabledWithVendor:(NSString * __nonnull)vendor;
-
-/**
  * Set extension specific property.
  *
  * @param vendor id for extension, e.g. agora.beauty.
@@ -1658,19 +1647,6 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * - < 0: Failure.
  */
 - (int)setExtensionPropertyWithVendor:(NSString * __nonnull)vendor key:(NSString * __nonnull)key value:(NSString * __nonnull)value;
-
-/**
- * Get extension specific property.
- *
- * @param vendor id for extension, e.g. agora.beauty.
- * @param key key for the property.
- * @param value buffer to store property value, out param.
- *
- * @return
- * - 0: Success.
- * - < 0: Failure.
- */
-- (int)getExtensionPropertyWithVendor:(NSString * __nonnull)vendor key:(NSString * __nonnull)key value:(NSString * _Nullable * _Nonnull)value;
 
 #if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
 
