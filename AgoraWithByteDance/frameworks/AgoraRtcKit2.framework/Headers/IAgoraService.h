@@ -7,7 +7,7 @@
 
 #include "AgoraBase.h"
 #include "AgoraOptional.h"
-#include "NGIAgoraExtensionControl.h"
+#include "NGIAgoraExtensionProvider.h"
 
 namespace agora {
 namespace rtc {
@@ -703,30 +703,10 @@ class IAgoraService {
    */
   virtual rtm::IRtmService* createRtmService() = 0;
 
-  /**
-   * Add an extension.
-   *
-   * @param id id for extension, e.g. agora.beauty.
-   * @param provider factory to create extension instance.
-   * @param observer event subscriber of extension.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
   virtual int addExtensionProvider(const char* id,
     agora_refptr<rtc::IExtensionProvider> provider,
     agora_refptr<rtc::IMediaExtensionObserver> observer = NULL) = 0;
 
-  /**
-   * Remove an extension.
-   *
-   * @param id id for extension, e.g. agora.beauty.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
   virtual int removeExtensionProvider(const char* id) = 0;
 
  protected:

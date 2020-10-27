@@ -1144,16 +1144,3 @@ __attribute__((visibility("default"))) @interface AgoraOutputVideoFrame : NSObje
 @property(assign, nonatomic) CVPixelBufferRef _Nullable pixelBuffer;
 
 @end
-
-/** the configuration of camera capturer.
- */
-#if TARGET_OS_IOS
-__attribute__((visibility("default"))) @interface AgoraCameraCapturerConfiguration: NSObject
-/** The camera direction. See AgoraCameraDirection:
-
- - AgoraCameraDirectionRear: The rear camera.
- - AgoraCameraDirectionFront: The front camera.
- */
-@property (assign, nonatomic) AgoraCameraDirection cameraDirection;
-@end
-#endif

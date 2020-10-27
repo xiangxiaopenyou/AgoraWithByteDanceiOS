@@ -10,6 +10,7 @@
 #include "AgoraRtcKit2/AgoraMediaBase.h"
 #include "AgoraRtcKit2/NGIAgoraExtensionControl.h"
 #include "AgoraRtcKit2/AgoraRefCountedObject.h"
+#include "AgoraRtcKit2/NGIAgoraExtensionProvider.h"
 
 namespace ByteDance {
 namespace Extension {

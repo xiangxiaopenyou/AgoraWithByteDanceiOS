@@ -1,5 +1,4 @@
 #pragma once
-
 #include "AgoraRefPtr.h"
 #include "AgoraBase.h"
 
@@ -230,7 +229,7 @@ class IVideoSinkBase : public RefCountInterface {
 class IMediaExtensionObserver : public RefCountInterface {
 public:
   virtual ~IMediaExtensionObserver() {}
-  virtual void onEvent(const char* vendor, const char* key, const char* json_value) {}
+  virtual void onEvent(const char* id, const char* key, const char* json_value) {}
 };
 
 /**
@@ -379,7 +378,7 @@ class IMediaControlPacketSender {
    * - `true`: Success.
    * - `false`: Failure.
    */
-  virtual int sendPeerMediaControlPacket(user_id_t userId,
+  virtual int sendPeerMediaControlPacket(media::base::user_id_t userId,
                                          const uint8_t *packet,
                                          size_t length) = 0;
 

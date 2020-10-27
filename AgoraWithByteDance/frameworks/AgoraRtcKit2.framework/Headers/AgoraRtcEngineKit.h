@@ -1819,7 +1819,6 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * - 0: Success.
  * - < 0: Failure.
  */
-
 - (int)startPreview;
 
 /**
@@ -3200,19 +3199,6 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * - <0: Failure.
  */
 - (int)switchCamera;
-
-/** Sets the camera capture configuration.
- * @note Call this method before enabling the local camera.
- * That said, you can call this method before calling \ref IRtcEngine::joinChannel "joinChannel",
- * \ref IRtcEngine::enableVideo "enableVideo", or \ref IRtcEngine::enableLocalVideo "enableLocalVideo",
- * depending on which method you use to turn on your local camera.
- *
- * @param config Sets the camera capturer configuration. See AgoraCameraCapturerConfiguration.
- * @return
- * - 0: Success.
- * - < 0: Failure.
- */
-- (int)setCameraCapturerConfiguration:(AgoraCameraCapturerConfiguration * _Nullable)config;
 #endif
 
 

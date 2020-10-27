@@ -1504,17 +1504,3 @@ typedef NS_ENUM(NSInteger, AgoraRtmpStreamPublishError) {
    */
   RTMP_STREAM_PUBLISH_ERROR_ALREADY_IN_USE = 12
 };
-
-/**
- * The camera direction
- */
-typedef NS_ENUM(NSUInteger, AgoraCameraDirection) {
-  /**
-   * 0: Uses the rear camera.
-   */
-  AgoraCameraDirectionRear = 0,
-  /**
-   * 1: Uses the front camera.
-   */
-  AgoraCameraDirectionFront = 1,
-};
