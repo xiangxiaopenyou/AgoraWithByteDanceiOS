@@ -55,8 +55,8 @@
   BDVideoFilterManager *provider = [BDVideoFilterManager sharedInstance];
   [provider loadPlugin];
   BDVideoExtensionObject *obj = [provider mediaFilterExtension];
-  obj.observer = self;
   cfg.mediaFilterExtensions = @[obj];
+  cfg.eventDelegate = self;
   
   self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:cfg delegate:self];
 }

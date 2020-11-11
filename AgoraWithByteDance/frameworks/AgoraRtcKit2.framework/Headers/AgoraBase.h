@@ -1386,6 +1386,11 @@ const int COMPATIBLE_BITRATE = -1;
 const int DEFAULT_MIN_BITRATE = -1;
 
 /**
+ * -2: (For future use) Set minimum bitrate the same as target bitrate.
+ */
+const int DEFAULT_MIN_BITRATE_EQUAL_TO_TARGET_BITRATE = -2;
+
+/**
  * Video codec types.
  */
 enum VIDEO_CODEC_TYPE {
@@ -1409,6 +1414,10 @@ enum VIDEO_CODEC_TYPE {
    * 6: Generic. 
    */
   VIDEO_CODEC_GENERIC = 6,
+  /** 
+   * 6: Generic. 
+   */
+  VIDEO_CODEC_GENERIC_H264 = 7,
 };
 
 /**
@@ -1776,6 +1785,20 @@ struct VideoEncoderConfiguration {
         degradationPreference(MAINTAIN_QUALITY),
         mirrorMode(VIDEO_MIRROR_MODE_DISABLED) {}
 };
+
+enum CAMERA_DIRECTION {
+  /** The rear camera. */
+  CAMERA_REAR = 0,
+  /** The front camera. */
+  CAMERA_FRONT = 1,
+};
+
+/** Camera capturer configuration.*/
+struct CameraCapturerConfiguration {
+  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
+  CAMERA_DIRECTION cameraDirection;
+};
+
 /**
  * The definition of the of SimulcastStreamConfig struct.
  */
@@ -2873,6 +2896,10 @@ typedef struct RtcImage {
    * The height of the watermark on the video.
    */
   int height;
+  /**
+   * Order attribute for an ordering of overlapping two-dimensional objects.
+   */
+  int zOrder;
 } RtcImage;
 
 /**
@@ -3039,10 +3066,24 @@ struct LiveTranscoding {
   */
   RtcImage* watermark;
   /**
+    * The variables means the count of watermark.
+    * if watermark is array, watermarkCount is count of watermark.
+    * if watermark is just a pointer, watermarkCount pointer to object address. At the same time, watermarkCount must be 0 or 1.
+    * default value: 0, compatible with old user-api
+  */
+  unsigned int watermarkCount;
+  /**
    * The background image added to the CDN live publishing stream. Once a background image is added,
    * the audience of the CDN live publishing stream can see it. See #RtcImage.
   */
   RtcImage* backgroundImage;
+  /**
+    * The variables means the count of backgroundImage.
+    * if backgroundImage is array, backgroundImageCount is count of backgroundImage.
+    * if backgroundImage is just a pointer, backgroundImageCount pointer to object address. At the same time, backgroundImageCount must be 0 or 1.
+    * default value: 0, compatible with old user-api
+  */
+  unsigned int backgroundImageCount;
   /**
    * The audio sample rates: #AUDIO_SAMPLE_RATE_TYPE.
    */
@@ -3081,7 +3122,9 @@ struct LiveTranscoding {
         transcodingExtraInfo(NULL),
         metadata(NULL),
         watermark(NULL),
+        watermarkCount(0),
         backgroundImage(NULL),
+        backgroundImageCount(0),
         audioSampleRate(AUDIO_SAMPLE_RATE_48000),
         audioBitrate(48),
         audioChannels(1),
@@ -3538,6 +3581,160 @@ enum AREA_CODE_EX {
     AREA_CODE_OVS = 0xFFFFFFFE
 };
 
+enum CHANNEL_MEDIA_RELAY_ERROR {
+  /** 0: The state is normal.
+    */
+  RELAY_OK = 0,
+  /** 1: An error occurs in the server response.
+    */
+  RELAY_ERROR_SERVER_ERROR_RESPONSE = 1,
+  /** 2: No server response. You can call the
+    * \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method to
+    * leave the channel.
+    */
+  RELAY_ERROR_SERVER_NO_RESPONSE = 2,
+  /** 3: The SDK fails to access the service, probably due to limited
+    * resources of the server.
+    */
+  RELAY_ERROR_NO_RESOURCE_AVAILABLE = 3,
+  /** 4: Fails to send the relay request.
+    */
+  RELAY_ERROR_FAILED_JOIN_SRC = 4,
+  /** 5: Fails to accept the relay request.
+    */
+  RELAY_ERROR_FAILED_JOIN_DEST = 5,
+  /** 6: The server fails to receive the media stream.
+    */
+  RELAY_ERROR_FAILED_PACKET_RECEIVED_FROM_SRC = 6,
+  /** 7: The server fails to send the media stream.
+    */
+  RELAY_ERROR_FAILED_PACKET_SENT_TO_DEST = 7,
+  /** 8: The SDK disconnects from the server due to poor network
+    * connections. You can call the \ref agora::rtc::IRtcEngine::leaveChannel
+    * "leaveChannel" method to leave the channel.
+    */
+  RELAY_ERROR_SERVER_CONNECTION_LOST = 8,
+  /** 9: An internal error occurs in the server.
+    */
+  RELAY_ERROR_INTERNAL_ERROR = 9,
+  /** 10: The token of the source channel has expired.
+    */
+  RELAY_ERROR_SRC_TOKEN_EXPIRED = 10,
+  /** 11: The token of the destination channel has expired.
+    */
+  RELAY_ERROR_DEST_TOKEN_EXPIRED = 11,
+};
+
+//callback event
+enum CHANNEL_MEDIA_RELAY_EVENT {
+  /** 0: The user disconnects from the server due to poor network
+    * connections.
+    */
+  RELAY_EVENT_NETWORK_DISCONNECTED = 0,
+  /** 1: The network reconnects.
+    */
+  RELAY_EVENT_NETWORK_CONNECTED = 1,
+  /** 2: The user joins the source channel.
+    */
+  RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL = 2,
+  /** 3: The user joins the destination channel.
+    */
+  RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL = 3,
+  /** 4: The SDK starts relaying the media stream to the destination channel.
+    */
+  RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL = 4,
+  /** 5: The server receives the video stream from the source channel.
+    */
+  RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC = 5,
+  /** 6: The server receives the audio stream from the source channel.
+    */
+  RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC = 6,
+  /** 7: The destination channel is updated.
+    */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL = 7,
+  /** 8: The destination channel update fails due to internal reasons.
+    */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED = 8,
+  /** 9: The destination channel does not change, which means that the
+    * destination channel fails to be updated.
+    */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE = 9,
+  /** 10: The destination channel name is NULL.
+    */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL = 10,
+  /** 11: The video profile is sent to the server.
+    */
+  RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
+};
+
+enum CHANNEL_MEDIA_RELAY_STATE {
+  /** 0: The SDK is initializing.
+    */
+  RELAY_STATE_IDLE = 0,
+  /** 1: The SDK tries to relay the media stream to the destination channel.
+    */
+  RELAY_STATE_CONNECTING = 1,
+  /** 2: The SDK successfully relays the media stream to the destination
+    * channel.
+    */
+  RELAY_STATE_RUNNING = 2,
+  /** 3: A failure occurs. See the details in code.
+    */
+  RELAY_STATE_FAILURE = 3,
+};
+
+/** The definition of ChannelMediaInfo.
+ */
+struct ChannelMediaInfo {
+    /** The channel name. The default value is NULL, which means that the SDK
+     * applies the current channel name.
+     */
+	const char* channelName;
+    /** The token that enables the user to join the channel. The default value
+     * is NULL, which means that the SDK applies the current token.
+     */
+	const char* token;
+    /** The user ID.
+     */
+	uid_t uid;
+};
+
+/** The definition of ChannelMediaRelayConfiguration.
+ */
+struct ChannelMediaRelayConfiguration {
+    /** Pointer to the source channel: ChannelMediaInfo.
+     *
+     * @note
+     * - `uid`: ID of the user whose media stream you want to relay. We
+     * recommend setting it as 0, which means that the SDK relays the media
+     * stream of the current broadcaster.
+     * - If you do not use a token, we recommend using the default values of
+     * the parameters in ChannelMediaInfo.
+     * - If you use a token, set uid as 0, and ensure that the token is
+     * generated with the uid set as 0.
+     */
+	ChannelMediaInfo *srcInfo;
+    /** Pointer to the destination channel: ChannelMediaInfo. If you want to
+     * relay the media stream to multiple channels, define as many
+     * ChannelMediaInfo structs (at most four).
+     * 
+     * @note `uid`: ID of the user who is in the source channel.
+     */
+	ChannelMediaInfo *destInfos;
+    /** The number of destination channels. The default value is 0, and the
+     * value range is [0,4). Ensure that the value of this parameter
+     * corresponds to the number of ChannelMediaInfo structs you define in
+     * `destInfos`.
+     */
+	int destCount;
+
+	ChannelMediaRelayConfiguration()
+			: srcInfo(nullptr)
+			, destInfos(nullptr)
+			, destCount(0)
+	{}
+};
+
 /**
  * The collections of network info.
  */
@@ -3609,6 +3806,14 @@ struct EncryptionConfig {
     return "aes-128-xts";
   }
   /// @endcond
+};
+
+/** Encryption error type.
+ */
+enum ENCRYPTION_ERROR_TYPE {
+    ENCRYPTION_ERROR_INTERNAL_FAILURE = 0,
+    ENCRYPTION_ERROR_DECRYPTION_FAILURE = 1,
+    ENCRYPTION_ERROR_ENCRYPTION_FAILURE = 2,
 };
 
 }  // namespace rtc

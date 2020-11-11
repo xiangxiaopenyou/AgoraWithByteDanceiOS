@@ -698,6 +698,8 @@ class IRtcConnectionObserver {
    */
   virtual void onStreamMessageError(user_id_t userId, int streamId, int code, int missed,
                                     int cached) {}
+
+  virtual void onEncryptionError(ENCRYPTION_ERROR_TYPE errorType) {}
 };
 
 class INetworkObserver {

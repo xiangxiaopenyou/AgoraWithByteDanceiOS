@@ -20,7 +20,7 @@ self.agoraKit = [AgoraRtcEngineKit sharedEngineWithConfig:cfg delegate:self];
 ## iOS
 
 ```
-obj.observer = self; // self为实现了AgoraMediaFilterEventDelegate接口的对象
+cfg.eventDelegate = self; // self为实现了AgoraMediaFilterEventDelegate接口的对象
 ```
 
 其中 self 需要实现以下 protocol

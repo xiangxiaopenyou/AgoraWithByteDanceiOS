@@ -358,6 +358,11 @@ You need to specify the metadata in the return value of this method.
 
 #endif
 
+/** An error of encryption occurred during SDK runtime.
+
+ @param errorType AgoraEncryptionErrorType
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine didOccurEncryptionError:(AgoraEncryptionErrorType)errorType;
 
 #pragma mark Local User Core Delegate Methods
 
@@ -852,6 +857,26 @@ error:(AgoraLocalVideoStreamError)error;
  */
 - (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine remoteAudioStateChangedOfUid:(NSUInteger)uid state:(AgoraAudioRemoteState)state reason:(AgoraAudioRemoteReason)reason elapsed:(NSInteger)elapsed;
 
+/** Occurs when the state of the media stream relay changes.
+
+ The SDK reports the state of the current media relay and possible error messages in this callback.
+ 
+ @param engine AgoraRtcEngineKit object.
+ @param state The state code in [AgoraChannelMediaRelayState](AgoraChannelMediaRelayState).
+ @param error The error code in [AgoraChannelMediaRelayError](AgoraChannelMediaRelayError).
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine
+channelMediaRelayStateDidChange:(AgoraChannelMediaRelayState)state
+            error:(AgoraChannelMediaRelayError)error;
+
+/** Reports events during the media stream relay.
+ 
+ @param engine AgoraRtcEngineKit object.
+ @param event The event code in [AgoraChannelMediaRelayEvent](AgoraChannelMediaRelayEvent).
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine
+didReceiveChannelMediaRelayEvent:(AgoraChannelMediaRelayEvent)event;
+
 /** A remote user's video paused or resumed. Same as [userMuteVideoBlock]([AgoraRtcEngineKit userMuteVideoBlock:]).
  @deprecated from v2.7.1
  @note   Invalid when the number of users in a channel exceeds 20.
@@ -1294,6 +1319,59 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * @return The connection state. See {@link AgoraConnectionState}.
  */
 - (AgoraConnectionState)getConnectionState:(unsigned int)connectionId;
+
+/** Starts to relay media streams across channels.
+
+ After a successful method call, the SDK triggers the [channelMediaRelayStateDidChange]([AgoraRtcEngineDelegate rtcEngine:channelMediaRelayStateDidChange:error:]) and [didReceiveChannelMediaRelayEvent]([AgoraRtcEngineDelegate rtcEngine:didReceiveChannelMediaRelayEvent:]) callbacks, and these callbacks return the state and events of the media stream relay.
+ 
+ - If the `channelMediaRelayStateDidChange` callback returns AgoraChannelMediaRelayStateRunning(2) and AgoraChannelMediaRelayStateIdle(0), and the `didReceiveChannelMediaRelayEvent` callback returns  AgoraChannelMediaRelayEventSentToDestinationChannel(4), the SDK starts relaying media streams between the original and the destination channel.
+ - If the `channelMediaRelayStateDidChange` callback returns AgoraChannelMediaRelayStateFailure(3), an exception occurs during the media stream relay.
+ 
+ **Note**
+
+ - Call this method after the [joinChannel]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method.
+ - This method takes effect only when you are a broadcaster in a Live-broadcast channel.
+ - After a successful method call, if you want to call this method again, ensure that you call the [stopChannelMediaRelay]([AgoraRtcEngineKit stopChannelMediaRelay]) method to quit the current relay.
+ - Contact sales-us@agora.io before implementing this function.
+ - We do not support string user accounts in this API.
+
+ @param config The configuration of the media stream relay: [AgoraChannelMediaRelayConfiguration](AgoraChannelMediaRelayConfiguration).
+
+ @return - 0: Success.
+ - < 0: Failure.
+ */
+- (int)startChannelMediaRelay:(AgoraChannelMediaRelayConfiguration * _Nonnull)config;
+
+/** Updates the channels for media stream relay.
+
+ After the channel media relay starts, if you want to relay the media stream to more channels, or leave the current relay channel, you can call the `updateChannelMediaRelay` method.
+
+ After a successful method call, the SDK triggers the [didReceiveChannelMediaRelayEvent]([AgoraRtcEngineDelegate rtcEngine:didReceiveChannelMediaRelayEvent:]) callback with the AgoraChannelMediaRelayEventUpdateDestinationChannel(7) state code.
+
+ **Note**
+
+ - Call this method after the [startChannelMediaRelay]([AgoraRtcEngineKit startChannelMediaRelay:]) method to update the destination channel.
+ - This method supports adding at most four destination channels in the relay. If there are already four destination channels in the relay, remove the unnecessary ones with the `removeDestinationInfoForChannelName` method in channelMediaRelayConfiguration before calling this method.
+ 
+ @param config The media stream relay configuration: [AgoraChannelMediaRelayConfiguration](AgoraChannelMediaRelayConfiguration).
+
+ @return - 0: Success.
+ - < 0: Failure.
+ */
+- (int)updateChannelMediaRelay:(AgoraChannelMediaRelayConfiguration * _Nonnull)config;
+
+/** Stops the media stream relay.
+
+ Once the relay stops, the broadcaster quits all the destination channels.
+
+ After a successful method call, the SDK triggers the [channelMediaRelayStateDidChange]([AgoraRtcEngineDelegate rtcEngine:channelMediaRelayStateDidChange:error:]) callback. If the callback returns  AgoraChannelMediaRelayStateIdle(0) and AgoraChannelMediaRelayErrorNone(0), the broadcaster successfully stops the relay.
+
+ @note If the method call fails, the SDK triggers the [channelMediaRelayStateDidChange]([AgoraRtcEngineDelegate rtcEngine:channelMediaRelayStateDidChange:error:]) callback with the AgoraChannelMediaRelayErrorServerNoResponse(2) or AgoraChannelMediaRelayEventUpdateDestinationChannelRefused(8) state code. You can leave the channel by calling the [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) method, and the media stream relay automatically stops.
+ 
+ @return - 0: Success.
+ - < 0: Failure.
+ */
+- (int)stopChannelMediaRelay;
 
 /**
  * @deprecated Web SDK interoperability is by default enabled.
@@ -2927,6 +3005,34 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  */
 - (int)setEncryptionSecret:(NSString * _Nullable)secret;
 
+/** Enables/Disables the built-in encryption.
+
+ In scenarios requiring high security, Agora recommends calling enableEncryption to enable the built-in encryption before joining a channel.
+
+ All users in the same channel must use the same encryption mode and encryption key. Once all users leave the channel, the encryption key of this channel is automatically cleared.
+
+ **Note**
+
+ - If you enable the built-in encryption, you cannot use the RTMP streaming function.
+ - Agora only supports `SM4_128_ECB` encryption mode for now.
+
+ @param enabled Whether to enable the built-in encryption:
+
+ - YES: Enable the built-in encryption.
+ - NO: Disable the built-in encryption.
+
+ @param config Configurations of built-in encryption schemas. See AgoraEncryptionConfig.
+
+ @return - 0: Success.
+ - < 0: Failure.
+
+  - -2 (`AgoraErrorCodeInvalidArgument`): An invalid parameter is used. Set the parameter with a valid value.
+  - -7 (`AgoraErrorCodeNotInitialized`): The SDK is not initialized. Initialize the `AgoraRtcEngineKit` instance before calling this method.
+  - -4 (`AgoraErrorCodeNotSupported`): The encryption mode is incorrect or the SDK fails to load the external encryption library. Check the enumeration or reload the external encryption library.
+ */
+- (int)enableEncryption:(bool)enabled encryptionConfig:(AgoraEncryptionConfig * _Nonnull)config;
+
+
 #pragma mark Data Stream
 
 /**-----------------------------------------------------------------------------
@@ -3199,6 +3305,19 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
  * - <0: Failure.
  */
 - (int)switchCamera;
+
+/** Sets the camera capture configuration.
+ * @note Call this method before enabling the local camera.
+ * That said, you can call this method before calling \ref IRtcEngine::joinChannel "joinChannel",
+ * \ref IRtcEngine::enableVideo "enableVideo", or \ref IRtcEngine::enableLocalVideo "enableLocalVideo",
+ * depending on which method you use to turn on your local camera.
+ *
+ * @param config Sets the camera capturer configuration. See AgoraCameraCapturerConfiguration.
+ * @return
+ * - 0: Success.
+ * - < 0: Failure.
+ */
+- (int)setCameraCapturerConfiguration:(AgoraCameraCapturerConfiguration * _Nullable)config;
 #endif
 
 
@@ -3323,6 +3442,26 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineKit : NSObject
 * <0: Failure.
  */
 - (int)stopPlaybackDeviceTest;
+
+/** Starts the audio device loopback test. (macOS only.)
+
+ @note  This method tests the local audio devices and does not report the network conditions.
+
+ This method tests whether the local audio devices are working properly. After calling this method, the microphone captures the local audio and plays it through the speaker. The [reportAudioVolumeIndicationOfSpeakers]([AgoraRtcEngineDelegate rtcEngine:reportAudioVolumeIndicationOfSpeakers:totalVolume:]) callback returns the local audio volume information at the set interval.
+
+ @return * 0: Success.
+* < 0: Failure.
+*/
+-(int)startAudioDeviceLoopbackTest:(int)indicationInterval;
+
+/** Stops the audio device loopback test. (macOS only.)
+
+ Ensure that you call this method to stop the loopback test after calling the [startAudioDeviceLoopbackTest]([AgoraRtcEngineKit startAudioDeviceLoopbackTest:]) method.
+
+ @return * 0: Success.
+* < 0: Failure.
+*/
+-(int)stopAudioDeviceLoopbackTest;
 
 /** Starts the capture device test.
 

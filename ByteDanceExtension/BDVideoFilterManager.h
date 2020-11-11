@@ -28,7 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BDVideoExtensionObject : NSObject <AgoraMediaFilterExtensionDelegate>
 @property (copy, nonatomic) NSString * __nonnull vendorName;
 @property (assign, nonatomic) void * __nullable mediaFilterProvider;
-@property (weak, nonatomic) id<AgoraMediaFilterEventDelegate> __nullable observer;
 
 @end
 

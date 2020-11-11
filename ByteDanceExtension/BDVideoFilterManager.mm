@@ -23,10 +23,6 @@
   return _vendorName;
 }
 
-- (id<AgoraMediaFilterEventDelegate>)mediaFilterObserver {
-  return _observer;
-}
-
 @end
 
 @interface BDVideoFilterManager() {

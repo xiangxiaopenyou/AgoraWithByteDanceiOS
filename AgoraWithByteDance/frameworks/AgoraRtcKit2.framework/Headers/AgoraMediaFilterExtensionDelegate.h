@@ -7,13 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AgoraMediaFilterEventDelegate.h"
 
 @protocol AgoraMediaFilterExtensionDelegate <NSObject>
 
+/* Media filter(audio filter or video fitler) name, shoud be unique
+ *
+ */
 - (NSString * __nonnull)vendor;
-
+/* Meida filter(audio filter or video filter) pointer,
+ * this pointer should implement IExtensionProvider interface
+ */
 - (void * __nullable)mediaFilterProvider;
-@optional
-- (id<AgoraMediaFilterEventDelegate> __nullable)mediaFilterObserver;
 @end

@@ -17,7 +17,7 @@ static const int kAdmMaxGuidSize = 128;
 static const int kIntervalInMillseconds = 200;
 
 
-#if defined(_WIN32) || (!defined(TARGET_OS_IPHONE)) && defined(TARGET_OS_MAC)
+#if defined(_WIN32) || (!TARGET_OS_IPHONE && TARGET_OS_MAC)
 /**
  * The struct of AudioDeviceInfo.
  *
@@ -57,16 +57,6 @@ public:
   virtual ~IAudioDeviceManagerObserver() {}
 
   /**
-   * Reports the microphone volume.
-   *
-   * After successfully starting the microphone test, the SDK triggers this callback to report the microphone
-   * volume. You can use this callback to test whether the microphone is working properly.
-   *
-   * @param volume The microphone volume. The value range is [0, 255].
-   */
-  virtual void onVolumeIndication(int volume) = 0;
-
-  /**
    * Occurs when the device state changes, for example, when a device is added or removed.
    *
    * To get the current information of the connected audio devices, call getNumberOfPlayoutDevices() or
@@ -89,7 +79,6 @@ public:
  */
 class INGAudioDeviceManager : public RefCountInterface {
 public:
-  // Volume control
   /**
    * Sets the volume of the microphone.
    * @param volume The volume of the microphone. The value range is [0, 255].
@@ -220,7 +209,7 @@ public:
   virtual int getCurrentRouting(AudioRoute& route) = 0;
 #endif
 
-#if defined(_WIN32) || (!defined(TARGET_OS_IPHONE)) && defined(TARGET_OS_MAC)
+#if defined(_WIN32) || (!TARGET_OS_IPHONE && TARGET_OS_MAC)
   /**
    * Gets the index numbers of all audio playout devices.
    *
@@ -344,29 +333,6 @@ public:
    */
   virtual int getApplicationMuteState(bool& mute) = 0;
 #endif
-
-  /**
-   * Starts the microphone test.
-   *
-   * Once you successfully start the microphone test, the SDK reports the volume information of the microphone
-   * at the `indicationInterval` in the onVolumeIndication() callback, regardless of whether anyone is speaking
-   * in the channel.
-   *
-   * @param indicationInterval The time interval between two consecutive `onVolumeIndication` callbacks (ms). The default value is 200 ms.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  virtual int startMicrophoneTest(
-      int indicationInterval = kIntervalInMillseconds) = 0;
-  /**
-   * Stops the microphone test.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  virtual int stopMicrophoneTest() = 0;
 
   /**
    * Registers an IAudioDeviceManagerObserver object.

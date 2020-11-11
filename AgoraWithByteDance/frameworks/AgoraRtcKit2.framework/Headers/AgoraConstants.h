@@ -22,6 +22,20 @@ extern NSInteger const AgoraVideoBitrateStandard;
  The bitrate in both the live broadcast and communication modes remain the same as in AgoraVideoProfile.
  */
 extern NSInteger const AgoraVideoBitrateCompatible;
+
+
+/** The min bitrate in [setVideoEncoderConfiguration]([AgoraRtcEngineKit setVideoEncoderConfiguration:]).
+
+ The min bitrate set to default value
+ */
+extern NSInteger const AgoraVideoDefaultMinBitrate;
+
+/** The min bitrate in [setVideoEncoderConfiguration]([AgoraRtcEngineKit setVideoEncoderConfiguration:]).
+
+ The min bitrate will be equal to bitrate
+ */
+extern NSInteger const AgoraVideoMinBitrateEqualToBitrate;
+
 /** 120 x 120
  */
 extern CGSize const AgoraVideoDimension120x120;

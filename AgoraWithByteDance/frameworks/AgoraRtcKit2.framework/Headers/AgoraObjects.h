@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AgoraEnumerates.h"
 #import "AgoraMediaFilterExtensionDelegate.h"
+#import "AgoraMediaFilterEventDelegate.h"
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -560,6 +561,8 @@ __attribute__((visibility("default"))) @interface AgoraVideoEncoderConfiguration
  */
 @property(assign, nonatomic) NSInteger bitrate;
 
+@property(assign, nonatomic) NSInteger minBitrate;
+
 /** Video orientation mode of the video: AgoraVideoOutputOrientationMode.
  */
 @property(assign, nonatomic) AgoraVideoOutputOrientationMode orientationMode;
@@ -659,6 +662,10 @@ __attribute__((visibility("default"))) @interface AgoraImage : NSObject
 /** Position and size of the watermark on the broadcasting video in CGRect
  */
 @property(assign, nonatomic) CGRect rect;
+/**
+ * Order attribute for an ordering of overlapping two-dimensional objects.
+*/
+@property (assign, nonatomic) NSInteger zOrder;
 @end
 
 /** A class for managing CDN transcoding.
@@ -698,12 +705,20 @@ __attribute__((visibility("default"))) @interface AgoraLiveTranscoding : NSObjec
  of the watermark.
  */
 @property(strong, nonatomic) AgoraImage *_Nullable watermark;
+/**
+ * add few watermarks
+*/
+@property (copy, nonatomic) NSArray<AgoraImage *> *_Nullable watermarkArray;
 /** The HTTP url (not HTTPS) address of the background image added to the CDN publishing stream.
 
  The audience of the CDN publishing stream can see the background image. See AgoraImage for the
  definition of the background image.
  */
 @property(strong, nonatomic) AgoraImage *_Nullable backgroundImage;
+/**
+ * add few backgroundImage
+*/
+@property (copy, nonatomic) NSArray<AgoraImage *> *_Nullable backgroundImageArray;
 /** Enter any of the 6-digit symbols defined in RGB.
  */
 @property(strong, nonatomic) COLOR_CLASS *_Nullable backgroundColor;
@@ -1031,6 +1046,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcEngineConfig: NSObject
  @property (assign, nonatomic) AgoraAudioScenario audioScenario;
  @property (assign, nonatomic) AgoraAreaCodeType areaCode;
  @property (copy, nonatomic) NSArray<id<AgoraMediaFilterExtensionDelegate>>* _Nullable mediaFilterExtensions;
+ @property (weak, nonatomic) id<AgoraMediaFilterEventDelegate> _Nullable eventDelegate;
 @end
 
 /**
@@ -1144,3 +1160,105 @@ __attribute__((visibility("default"))) @interface AgoraOutputVideoFrame : NSObje
 @property(assign, nonatomic) CVPixelBufferRef _Nullable pixelBuffer;
 
 @end
+
+/** the configuration of camera capturer.
+ */
+#if TARGET_OS_IOS
+__attribute__((visibility("default"))) @interface AgoraCameraCapturerConfiguration: NSObject
+/** The camera direction. See AgoraCameraDirection:
+
+ - AgoraCameraDirectionRear: The rear camera.
+ - AgoraCameraDirectionFront: The front camera.
+ */
+@property (assign, nonatomic) AgoraCameraDirection cameraDirection;
+@end
+#endif
+
+/** The definition of AgoraChannelMediaRelayInfo.
+ */
+__attribute__((visibility("default"))) @interface AgoraChannelMediaRelayInfo: NSObject
+/** The token that enables the user to join the channel.
+ */
+@property (copy, nonatomic) NSString * _Nullable token;
+/** The channel name.
+ */
+@property (copy, nonatomic) NSString * _Nullable channelName;
+/** The user ID.
+ */
+@property (assign, nonatomic) NSUInteger uid;
+/** Initializes the AgoraChannelMediaRelayInfo object
+ 
+ @param token The token that enables the user to join the channel.
+ */
+- (instancetype _Nonnull)initWithToken:(NSString *_Nullable)token;
+@end
+
+/** The definition of AgoraChannelMediaRelayConfiguration.
+ */
+__attribute__((visibility("default"))) @interface AgoraChannelMediaRelayConfiguration: NSObject
+/** The information of the destination channel: AgoraChannelMediaRelayInfo. It contains the following members:
+ 
+ - `channelName`: The name of the destination channel.
+ - `uid`: ID of the broadcaster in the destination channel. The value ranges from 0 to (2<sup>32</sup>-1). To avoid UID conflicts, this `uid` must be different from any other UIDs in the destination channel. The default value is 0, which means the SDK generates a random UID.
+ - `token`: The token for joining the destination channel. It is generated with the `channelName` and `uid` you set in `destinationInfos`.
+ 
+ - If you have not enabled the App Certificate, set this parameter as the default value `nil`, which means the SDK applies the App ID.
+ - If you have enabled the App Certificate, you must use the `token` generated with the `channelName` and `uid`.
+ */
+@property (strong, nonatomic, readonly) NSDictionary<NSString *, AgoraChannelMediaRelayInfo *> *_Nullable destinationInfos;
+/** The information of the source channel: AgoraChannelMediaRelayInfo. It contains the following members:
+ 
+ - `channelName`: The name of the source channel. The default value is `nil`, which means the SDK applies the name of the current channel.
+ - `uid`: ID of the broadcaster whose media stream you want to relay. The default value is 0, which means the SDK generates a random UID. You must set it as 0.
+ - `token`: The token for joining the source channel. It is generated with the `channelName` and `uid` you set in `sourceInfo`.
+ 
+ - If you have not enabled the App Certificate, set this parameter as the default value `nil`, which means the SDK applies the App ID.
+ - If you have enabled the App Certificate, you must use the `token` generated with the `channelName` and `uid`, and the `uid` must be set as 0.
+ */
+@property (strong, nonatomic) AgoraChannelMediaRelayInfo *_Nonnull sourceInfo;
+/** Sets the information of the destination channel.
+ 
+ If you want to relay the media stream to multiple channels, call this method as many times (at most four).
+ 
+ @param destinationInfo The information of the destination channel: AgoraChannelMediaRelayInfo. It contains the following members:
+ 
+ - `channelName`: The name of the destination channel.
+ - `uid`: ID of the broadcaster in the destination channel. The value ranges from 0 to (2<sup>32</sup>-1). To avoid UID conflicts, this `uid` must be different from any other UIDs in the destination channel. The default value is 0, which means the SDK generates a random UID.
+ - `token`: The token for joining the destination channel. It is generated with the `channelName` and `uid` you set in `destinationInfo`.
+ 
+ - If you have not enabled the App Certificate, set this parameter as the default value `nil`, which means the SDK applies the App ID.
+ - If you have enabled the App Certificate, you must use the `token` generated with the `channelName` and `uid`.
+ 
+ @param channelName The name of the destination channel. Ensure that the value of this parameter is the same as that of the `channelName` member in `destinationInfo`.
+ 
+ @return - YES: Success.
+ - NO: Failure.
+ */
+- (BOOL)setDestinationInfo:(AgoraChannelMediaRelayInfo *_Nonnull)destinationInfo forChannelName:(NSString *_Nonnull)channelName;
+/** Removes the destination channel.
+ 
+ @param channelName The name of the destination channel.
+ 
+ @return - YES: Success.
+ - NO: Failure.
+ */
+- (BOOL)removeDestinationInfoForChannelName:(NSString *_Nonnull)channelName;
+@end
+
+/** Configurations of built-in encryption schemas.
+ */
+__attribute__((visibility("default"))) @interface AgoraEncryptionConfig: NSObject
+
+ /** Encryption mode. The default encryption mode is `AgoraEncryptionModeAES128XTS`. See AgoraEncryptionMode.
+  */
+ @property (assign, nonatomic) AgoraEncryptionMode encryptionMode;
+
+ /** Encryption key in string type.
+
+ **Note**
+
+ If you do not set an encryption key or set it as `nil`, you cannot use the built-in encryption, and the SDK returns `-2` (`AgoraErrorCodeInvalidArgument`).
+  */
+ @property (copy, nonatomic) NSString * _Nullable encryptionKey;
+ @end
+

@@ -24,13 +24,13 @@ class ICameraCapturer : public RefCountInterface {
    */
   enum CAMERA_SOURCE {
     /**
-     * The camera source is the front camera.
-     */
-    CAMERA_FRONT,
-    /**
      * The camera source is the rear camera.
      */
     CAMERA_BACK,
+    /**
+     * The camera source is the front camera.
+     */
+    CAMERA_FRONT,
   };
 
   // Interface for receiving information about available camera devices.

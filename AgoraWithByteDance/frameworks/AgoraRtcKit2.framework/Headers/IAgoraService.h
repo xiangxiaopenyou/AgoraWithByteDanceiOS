@@ -34,7 +34,7 @@ class IMediaNodeFactory;
 class IRecordingDeviceSource;
 class IRtmpStreamingService;
 class IMediaPacketSender;
-class IMediaExtensionObserver;
+class IMediaRelayService;
 
 class IRtcEngine;
 /**
@@ -116,6 +116,11 @@ struct AgoraServiceConfiguration {
    * The log dir.
    */
   const char* logDir = nullptr;
+
+  /**
+   * The extension event observer.
+   */
+  agora::agora_refptr<agora::rtc::IMediaExtensionObserver> extensionObserver = nullptr;
 };
 /**
  * The global audio session configurations.
@@ -695,6 +700,19 @@ class IAgoraService {
       agora_refptr<rtc::IRtcConnection> rtcConnection, const char* appId) = 0;
 
   /**
+   * Creates an Media Relay service object and returns the pointer.
+   *
+   * @param rtcConnection The pointer to \ref rtc::IRtcConnection "IRtcConnection".
+   * @param appId The App ID of the media relay service.
+   * @return
+   * - The pointer to \ref rtc::IMediaRelayService "IMediaRelayService", if the method call
+   * succeeds.
+   * - A null pointer, if the method call fails.
+   */
+  virtual agora_refptr<rtc::IMediaRelayService> createMediaRelayService(
+      agora_refptr<rtc::IRtcConnection> rtcConnection, const char* appId) = 0;
+
+  /**
    * Creates an RTM servive object and returns the pointer.
    *
    * @return
@@ -704,8 +722,7 @@ class IAgoraService {
   virtual rtm::IRtmService* createRtmService() = 0;
 
   virtual int addExtensionProvider(const char* id,
-    agora_refptr<rtc::IExtensionProvider> provider,
-    agora_refptr<rtc::IMediaExtensionObserver> observer = NULL) = 0;
+    agora_refptr<rtc::IExtensionProvider> provider) = 0;
 
   virtual int removeExtensionProvider(const char* id) = 0;
 

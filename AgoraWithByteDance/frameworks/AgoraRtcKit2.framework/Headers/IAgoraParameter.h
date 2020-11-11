@@ -79,9 +79,24 @@
 #define KEY_RTC_VIDEO_BITRATE_ADJUST_RATIO           "rtc.video.bitrate_adjust_ratio"
 
 /**
+  * set the minbitrate / bitrate ratio for video
+*/
+#define KEY_RTC_VIDEO_MINBITRATE_RATIO               "rtc.video.minbitrate_ratio"
+
+/**
   * set the degradation preference
 */
 #define KEY_RTC_VIDEO_DEGRADATION_PREFERENCE         "rtc.video.degradation_preference"
+
+/**
+  * set the degradation fps down step
+*/
+
+#define KEY_RTC_VIDEO_DEGRADATION_FPS_DOWN_STEP      "rtc.video.degradation_fps_down_step"
+/**
+  * set the degradation fps up step
+*/
+#define KEY_RTC_VIDEO_DEGRADATION_FPS_UP_STEP        "rtc.video.degradation_fps_up_step"
 
 namespace agora {
 

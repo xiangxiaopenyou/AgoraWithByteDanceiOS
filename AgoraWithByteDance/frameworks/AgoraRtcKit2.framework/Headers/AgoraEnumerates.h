@@ -514,6 +514,11 @@ typedef NS_ENUM(NSInteger, AgoraEncryptionMode) {
     AgoraEncryptionModeAES256XTS = 2,
     /** 256-bit AES encryption, XTS mode */
     AgoraEncryptionModeAES128ECB = 3,
+
+    /** 4: 128-bit SM4 encryption, ECB mode. */
+    AgoraEncryptionModeSM4128ECB = 4,
+    /** Enumerator boundary */
+    AgoraEncryptionModeEnd,
 };
 
 /** Reason for the user being offline */
@@ -1336,6 +1341,10 @@ typedef NS_ENUM(NSInteger, AgoraAudioMixingStateType) {
    * 714: The audio mixing file playback fails. See `AgoraAudioMixingErrorType` for details.
    */
   AgoraAudioMixingStateTypeFailed = 714,
+  /**
+   * 715: The audio mixing file playback is completed.
+   */
+  AgoraAudioMixingStateTypeCompleted = 715,
 };
 
 /**
@@ -1504,3 +1513,126 @@ typedef NS_ENUM(NSInteger, AgoraRtmpStreamPublishError) {
    */
   RTMP_STREAM_PUBLISH_ERROR_ALREADY_IN_USE = 12
 };
+
+/**
+ * The camera direction
+ */
+typedef NS_ENUM(NSUInteger, AgoraCameraDirection) {
+  /**
+   * 0: Uses the rear camera.
+   */
+  AgoraCameraDirectionRear = 0,
+  /**
+   * 1: Uses the front camera.
+   */
+  AgoraCameraDirectionFront = 1,
+};
+
+/** The state code in AgoraChannelMediaRelayState.
+ */
+typedef NS_ENUM(NSInteger, AgoraChannelMediaRelayState) {
+  /** 0: The SDK is initializing.
+   */
+  AgoraChannelMediaRelayStateIdle = 0,
+  /** 1: The SDK tries to relay the media stream to the destination channel.
+   */
+  AgoraChannelMediaRelayStateConnecting = 1,
+  /** 2: The SDK successfully relays the media stream to the destination channel.
+   */
+  AgoraChannelMediaRelayStateRunning = 2,
+  /** 3: A failure occurs. See the details in `error`.
+   */
+  AgoraChannelMediaRelayStateFailure = 3,
+};
+
+/** The event code in AgoraChannelMediaRelayEvent.
+ */
+typedef NS_ENUM(NSInteger, AgoraChannelMediaRelayEvent) {
+  /** 0: The user disconnects from the server due to poor network connections.
+   */
+  AgoraChannelMediaRelayEventDisconnect = 0,
+  /** 1: The network reconnects.
+   */
+  AgoraChannelMediaRelayEventConnected = 1,
+  /** 2: The user joins the source channel.
+   */
+  AgoraChannelMediaRelayEventJoinedSourceChannel = 2,
+  /** 3: The user joins the destination channel.
+   */
+  AgoraChannelMediaRelayEventJoinedDestinationChannel = 3,
+  /** 4: The SDK starts relaying the media stream to the destination channel.
+   */
+  AgoraChannelMediaRelayEventSentToDestinationChannel = 4,
+  /** 5: The server receives the video stream from the source channel.
+   */
+  AgoraChannelMediaRelayEventReceivedVideoPacketFromSource = 5,
+  /** 6: The server receives the audio stream from the source channel.
+   */
+  AgoraChannelMediaRelayEventReceivedAudioPacketFromSource = 6,
+  /** 7: The destination channel is updated.
+   */
+  AgoraChannelMediaRelayEventUpdateDestinationChannel = 7,
+  /** 8: The destination channel update fails due to internal reasons.
+   */
+  AgoraChannelMediaRelayEventUpdateDestinationChannelRefused = 8,
+  /** 9: The destination channel does not change, which means that the destination channel fails to be updated.
+   */
+  AgoraChannelMediaRelayEventUpdateDestinationChannelNotChange = 9,
+  /** 10: The destination channel name is NULL.
+   */
+  AgoraChannelMediaRelayEventUpdateDestinationChannelIsNil = 10,
+  /** 11: The video profile is sent to the server.
+   */
+  AgoraChannelMediaRelayEventVideoProfileUpdate = 11,
+};
+
+/** The error code in AgoraChannelMediaRelayError.
+ */
+typedef NS_ENUM(NSInteger, AgoraChannelMediaRelayError) {
+  /** 0: The state is normal.
+   */
+  AgoraChannelMediaRelayErrorNone = 0,
+  /** 1: An error occurs in the server response.
+   */
+  AgoraChannelMediaRelayErrorServerErrorResponse = 1,
+  /** 2: No server response. You can call the [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) method to leave the channel.
+   */
+  AgoraChannelMediaRelayErrorServerNoResponse = 2,
+  /** 3: The SDK fails to access the service, probably due to limited resources of the server.
+   */
+  AgoraChannelMediaRelayErrorNoResourceAvailable = 3,
+  /** 4: Fails to send the relay request.
+   */
+  AgoraChannelMediaRelayErrorFailedJoinSourceChannel = 4,
+  /** 5: Fails to accept the relay request.
+   */
+  AgoraChannelMediaRelayErrorFailedJoinDestinationChannel = 5,
+  /** 6: The server fails to receive the media stream.
+   */
+  AgoraChannelMediaRelayErrorFailedPacketReceivedFromSource = 6,
+  /** 7: The server fails to send the media stream.
+   */
+  AgoraChannelMediaRelayErrorFailedPacketSentToDestination = 7,
+  /** 8: The SDK disconnects from the server due to poor network connections. You can call the [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) method to leave the channel.
+   */
+  AgoraChannelMediaRelayErrorServerConnectionLost = 8,
+  /** 9: An internal error occurs in the server.
+   */
+  AgoraChannelMediaRelayErrorInternalError = 9,
+  /** 10: The token of the source channel has expired.
+   */
+  AgoraChannelMediaRelayErrorSourceTokenExpired = 10,
+  /** 11: The token of the destination channel has expired.
+   */
+  AgoraChannelMediaRelayErrorDestinationTokenExpired = 11,
+};
+
+/**
+ * Encryption error type.
+ */
+typedef NS_ENUM(NSInteger, AgoraEncryptionErrorType) {
+  ENCRYPTION_ERROR_INTERNAL_FAILURE = 0,
+  ENCRYPTION_ERROR_DECRYPTION_FAILURE = 1,
+  ENCRYPTION_ERROR_ENCRYPTION_FAILURE = 2
+};
+

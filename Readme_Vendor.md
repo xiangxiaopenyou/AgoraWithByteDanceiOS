@@ -75,7 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BDVideoExtensionObject : NSObject <AgoraMediaFilterExtensionDelegate>
 @property (copy, nonatomic) NSString * __nonnull vendorName; //插件id
 @property (assign, nonatomic) void * __nullable mediaFilterProvider; //实现了agora::rtc::IExtensionProvider接口对象
-@property (weak, nonatomic) id<AgoraMediaFilterEventDelegate> __nullable observer; //实现了AgoraMediaFilterEventDelegate接口对象
 
 @end
 
@@ -90,17 +89,7 @@ AgoraMediaFilterExtensionDelegate接口定义如下
 - (NSString * __nonnull)vendor; //插件id
 
 - (void * __nullable)mediaFilterProvider; //插件id
-@optional
-- (id<AgoraMediaFilterEventDelegate> __nullable)mediaFilterObserver; //实现了AgoraMediaFilterEventDelegate接口对象
 @end
-```
-
-AgoraMediaFilterEventDelegate接口定义如下
-
-```
-- (void)onEvent:(NSString * __nullable)vendor
-            key:(NSString * __nullable)key
-     json_value:(NSString * __nullable)json_value;
 ```
 
 PS: 提供的framework需要使用SDK Cpp相关Interface，需要引入AgoraRtcKit2.framework, 不需要Emedded & Sign，只需要Do Not Embedded，因为最终的App负责嵌入AgoraRtcKit2.framework

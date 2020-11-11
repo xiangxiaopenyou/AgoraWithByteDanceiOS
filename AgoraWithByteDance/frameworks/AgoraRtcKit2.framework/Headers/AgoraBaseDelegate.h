@@ -128,6 +128,13 @@
 
 #endif
 
+/**
+ *  An error of encryption occurred during SDK runtime.
+ *
+ *  @param errorType AgoraEncryptionErrorType
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine didOccurEncryptionError:(AgoraEncryptionErrorType)errorType;
+
 #pragma mark Local user common delegates
 
 /**

@@ -273,4 +273,25 @@
  * @param type See {@link AgoraNetworkType}.
  */
 - (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine networkTypeChanged:(AgoraNetworkType)type;
+
+/** Occurs when the state of the media stream relay changes.
+
+ The SDK reports the state of the current media relay and possible error messages in this callback.
+ 
+ @param engine AgoraRtcEngineKit object.
+ @param state The state code in [AgoraChannelMediaRelayState](AgoraChannelMediaRelayState).
+ @param error The error code in [AgoraChannelMediaRelayError](AgoraChannelMediaRelayError).
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine
+channelMediaRelayStateDidChange:(AgoraChannelMediaRelayState)state
+            error:(AgoraChannelMediaRelayError)error;
+
+/** Reports events during the media stream relay.
+ 
+ @param engine AgoraRtcEngineKit object.
+ @param event The event code in [AgoraChannelMediaRelayEvent](AgoraChannelMediaRelayEvent).
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine
+didReceiveChannelMediaRelayEvent:(AgoraChannelMediaRelayEvent)event;
+
 @end
