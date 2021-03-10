@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7E333F0E25318E4C0007F7C9 /* AgoraRtcKit2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E333F0D25318E4C0007F7C9 /* AgoraRtcKit2.framework */; platformFilter = ios; };
-		7E333F1A25318E8D0007F7C9 /* AgoraRtcKit2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E333F0D25318E4C0007F7C9 /* AgoraRtcKit2.framework */; };
-		7E333F1B25318E8D0007F7C9 /* AgoraRtcKit2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7E333F0D25318E4C0007F7C9 /* AgoraRtcKit2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7E333F3B25319A060007F7C9 /* BDResourceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E333F3A25319A060007F7C9 /* BDResourceHelper.m */; };
 		7E333F4525319AF90007F7C9 /* FilterResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E333F4025319AF80007F7C9 /* FilterResource.bundle */; };
 		7E333F4625319AF90007F7C9 /* LicenseBag.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E333F4125319AF80007F7C9 /* LicenseBag.bundle */; };
@@ -18,6 +15,9 @@
 		7E333F4925319AF90007F7C9 /* ComposeMakeup.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E333F4425319AF80007F7C9 /* ComposeMakeup.bundle */; };
 		7E333F4F25319CE20007F7C9 /* VideoChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E333F4E25319CE20007F7C9 /* VideoChatViewController.m */; };
 		7E333F5625319E860007F7C9 /* AppID.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E333F5425319E850007F7C9 /* AppID.m */; };
+		7E5598E225F8D43100272C05 /* AgoraRtcKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5598E125F8D43100272C05 /* AgoraRtcKit.framework */; };
+		7E5598EA25F8D45100272C05 /* AgoraRtcKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5598E125F8D43100272C05 /* AgoraRtcKit.framework */; };
+		7E5598EB25F8D45100272C05 /* AgoraRtcKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5598E125F8D43100272C05 /* AgoraRtcKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7E7492A725184A1F00CA5E4F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7492A625184A1F00CA5E4F /* AppDelegate.m */; };
 		7E7492AA25184A1F00CA5E4F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7492A925184A1F00CA5E4F /* SceneDelegate.m */; };
 		7E7492B025184A1F00CA5E4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E7492AE25184A1F00CA5E4F /* Main.storyboard */; };
@@ -139,8 +139,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				7E5598EB25F8D45100272C05 /* AgoraRtcKit.framework in Embed Frameworks */,
 				7E7492EB25184A7E00CA5E4F /* ByteDanceExtension.framework in Embed Frameworks */,
-				7E333F1B25318E8D0007F7C9 /* AgoraRtcKit2.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,6 +160,7 @@
 		7E333F4E25319CE20007F7C9 /* VideoChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoChatViewController.m; sourceTree = "<group>"; };
 		7E333F5425319E850007F7C9 /* AppID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppID.m; sourceTree = "<group>"; };
 		7E333F5525319E850007F7C9 /* AppID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppID.h; sourceTree = "<group>"; };
+		7E5598E125F8D43100272C05 /* AgoraRtcKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AgoraRtcKit.framework; path = AgoraWithByteDance/frameworks/AgoraRtcKit.framework; sourceTree = "<group>"; };
 		7E7492A225184A1F00CA5E4F /* AgoraWithByteDance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgoraWithByteDance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E7492A525184A1F00CA5E4F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7E7492A625184A1F00CA5E4F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -263,8 +264,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E5598EA25F8D45100272C05 /* AgoraRtcKit.framework in Frameworks */,
 				7E7492EA25184A7E00CA5E4F /* ByteDanceExtension.framework in Frameworks */,
-				7E333F1A25318E8D0007F7C9 /* AgoraRtcKit2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,7 +287,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E333F0E25318E4C0007F7C9 /* AgoraRtcKit2.framework in Frameworks */,
+				7E5598E225F8D43100272C05 /* AgoraRtcKit.framework in Frameworks */,
 				7E749410251852B000CA5E4F /* VideoToolbox.framework in Frameworks */,
 				7E74940E251852A900CA5E4F /* AudioToolbox.framework in Frameworks */,
 				7E74940C2518529D00CA5E4F /* CoreTelephony.framework in Frameworks */,
@@ -408,6 +409,7 @@
 		7E7493E6251850F500CA5E4F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7E5598E125F8D43100272C05 /* AgoraRtcKit.framework */,
 				7E333F0D25318E4C0007F7C9 /* AgoraRtcKit2.framework */,
 				7E74940F251852B000CA5E4F /* VideoToolbox.framework */,
 				7E74940D251852A900CA5E4F /* AudioToolbox.framework */,

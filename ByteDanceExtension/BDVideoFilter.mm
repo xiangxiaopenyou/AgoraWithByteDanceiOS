@@ -8,54 +8,58 @@
 #include "BDVideoFilter.h"
 #import "BDErrorCode.h"
 
-namespace ByteDance {
-namespace Extension {
-BDVideoFilter::BDVideoFilter(agora::agora_refptr<BDProcessor> bdProcessor): bdProcessor_(bdProcessor) {}
-
-BDVideoFilter::~BDVideoFilter() {
-  if (bdProcessor_ && !opengl_released_) {
-    bdProcessor_->releaseOpenGL();
-  }
+@implementation BDVideoFilter {
+  ByteDance::Extension::BDProcessor* _processor;
+  BOOL _opengl_released;
 }
 
-size_t BDVideoFilter::setProperty(const char* key, const void* buf, size_t buf_size) {
-  if (!buf) {
-    return -1;
+- (instancetype)initWithProcessor:(ByteDance::Extension::BDProcessor *)processor {
+  if (self = [super init]) {
+    _processor = processor;
+    _opengl_released = NO;
   }
-  
-  if (bdProcessor_) {
-    const char *json_value = static_cast<const char *>(buf);
-    std::string parameter(json_value);
-    return bdProcessor_->setParameters(parameter);
-  }
-  
-  return -1;
+  return self;
 }
 
-bool BDVideoFilter::onDataStreamWillStart() {
-  if (bdProcessor_) {
-    bdProcessor_->initOpenGL();
+- (void)dealloc {
+  if (_processor && !_opengl_released) {
+    _processor->releaseOpenGL();
+  }
+  _processor = nullptr;
+}
+
+- (BOOL)adaptVideoFrame:(AgoraExtVideoFrame *)srcFrame dstFrame:(AgoraExtVideoFrame **)dstFrame {
+  if (_processor) {
+    *dstFrame = nil;
+    _processor->processFrame(srcFrame);
+    *dstFrame = srcFrame;
     return true;
   }
   return false;
 }
 
-void BDVideoFilter::onDataStreamWillStop() {
-  if (bdProcessor_) {
-    bdProcessor_->releaseOpenGL();
-    opengl_released_ = true;
+- (BOOL)didDataStreamWillStart {
+  if (_processor) {
+    return _processor->initOpenGL();
   }
-}
-
-bool BDVideoFilter::adaptVideoFrame(const agora::media::base::VideoFrame& capturedFrame,
-                                    agora::media::base::VideoFrame& adaptedFrame) {
-  if (bdProcessor_) {
-    bdProcessor_->processFrame(capturedFrame);
-    adaptedFrame = capturedFrame;
-    return true;
-  }
+  
   return false;
 }
 
+- (void)didDataStreamWillStop {
+  if (_processor) {
+    _processor->releaseOpenGL();
+    _opengl_released = YES;
+  }
 }
-}
+
+- (NSInteger)getPropertyWithKey:(NSString *)key value:(NSData **)value { return -1; }
+
+- (BOOL)isEnabled { return false; }
+
+- (void)setEnabled:(BOOL)enabled { }
+
+- (NSInteger)setPropertyWithKey:(NSString * _Nonnull)key value:(NSData * _Nonnull)value { return -1; }
+
+@end
+

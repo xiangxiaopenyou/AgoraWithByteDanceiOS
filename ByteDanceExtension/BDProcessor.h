@@ -10,19 +10,19 @@
 #include <string>
 #include <mutex>
 #include <vector>
-#include "AgoraRtcKit2/AgoraMediaBase.h"
-#include "AgoraRtcKit2/AgoraRefPtr.h"
+#import <AgoraRtcKit/AgoraExtObjects.h>
 #include "bef_effect_ai_api.h"
 #include "bef_effect_ai_lightcls.h"
 #include "rapidjson.h"
 
 namespace ByteDance {
 namespace Extension {
-class BDProcessor : public agora::RefCountInterface {
+class BDProcessor {
 public:
+  BDProcessor();
   bool initOpenGL();
   bool releaseOpenGL();
-  int processFrame(const agora::media::base::VideoFrame& capturedFrame);
+  int processFrame(AgoraExtVideoFrame* capturedFrame);
   int releaseEffectEngine();
   int setParameters(std::string parameter);
   void onDataCallback(std::string data);
@@ -32,8 +32,8 @@ private:
   void processFaceDetect();
   void processHandDetect();
   void processLightDetect();
-  void processEffect(const agora::media::base::VideoFrame& capturedFrame);
-  void prepareCachedVideoFrame(const agora::media::base::VideoFrame& capturedFrame);
+  void processEffect(AgoraExtVideoFrame* capturedFrame);
+  void prepareCachedVideoFrame(AgoraExtVideoFrame* capturedFrame);
   std::mutex mutex_;
   
   bef_effect_handle_t byteEffectHandler_ = nullptr;
@@ -63,7 +63,7 @@ private:
   std::string lightDetectModelPath_;
   bef_effect_handle_t lightDetectHandler_ = nullptr;
   
-  agora::media::base::VideoFrame prevFrame_ = agora::media::base::VideoFrame();
+  AgoraExtVideoFrame* prevFrame_ = nil;
   unsigned char* yuvBuffer_ = nullptr;
   unsigned char* rgbaBuffer_ = nullptr;
   

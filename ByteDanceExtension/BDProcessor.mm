@@ -13,28 +13,20 @@
 #include "stringbuffer.h"
 #include "prettywriter.h"
 #import "BDErrorCode.h"
+#import <Foundation/Foundation.h>
 
 extern "C" void initGL();
 extern "C" void releaseGL();
 extern "C" void makeCurrent();
-extern "C" void dataCallback(const char * data);
-extern "C" void logMessage(int retval, std::string message);
-
-namespace {
-std::string formatLog(const char* fmt, ...) {
-  static char buffer[1024];
-  va_list vl;
-  va_start(vl, fmt);
-  vsnprintf(buffer, 1024, fmt, vl);
-  std::string ret(buffer);
-  va_end(vl);
-  return ret;
-}
-}
+extern "C" void dataCallback(NSString* data);
+extern "C" void logMessage(int retval, NSString* message);
 
 namespace ByteDance {
 namespace Extension {
 using namespace rapidjson;
+static NSString *log = nil;
+
+BDProcessor::BDProcessor(): prevFrame_([AgoraExtVideoFrame new]) {}
 
 bool BDProcessor::initOpenGL() {
   const std::lock_guard<std::mutex> lock(mutex_);
@@ -48,7 +40,7 @@ bool BDProcessor::releaseOpenGL() {
   return true;
 }
 
-void BDProcessor::prepareCachedVideoFrame(const agora::media::base::VideoFrame& capturedFrame) {
+void BDProcessor::prepareCachedVideoFrame(AgoraExtVideoFrame* capturedFrame) {
   int ysize = capturedFrame.yStride * capturedFrame.height;
   int usize = capturedFrame.uStride * capturedFrame.height / 2;
   int vsize = capturedFrame.vStride * capturedFrame.height / 2;
@@ -82,32 +74,29 @@ void BDProcessor::prepareCachedVideoFrame(const agora::media::base::VideoFrame& 
                BEF_AI_CLOCKWISE_ROTATE_0,
                false);
   prevFrame_ = capturedFrame;
-  
 }
 
-void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFrame) {
+void BDProcessor::processEffect(AgoraExtVideoFrame* capturedFrame) {
   makeCurrent();
-  std::string log;
-  
   if (!byteEffectHandler_) {
     bef_effect_result_t ret;
     ret = bef_effect_ai_create(&byteEffectHandler_);
     
-    log = formatLog("BDProcessor::processEffect create effect handle failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processEffect create effect handle failed ! %d", ret];
     logMessage(ret, log);
     
     ret = bef_effect_ai_check_license(byteEffectHandler_, licensePath_.c_str());
     
-    log = formatLog("BDProcessor::processEffect check license failed, %d path: %s",  ret, licensePath_.c_str());
+    log = [NSString stringWithFormat:@"BDProcessor::processEffect check license failed, %d path: %s",  ret, licensePath_.c_str()];
     logMessage(ret, log);
     
     ret = bef_effect_ai_init(byteEffectHandler_, 0, 0, modelDir_.c_str(), "");
     
-    log = formatLog("BDProcessor::processEffect init effect handler failed, %d model path: %s", ret, modelDir_.c_str());
+    log = [NSString stringWithFormat:@"BDProcessor::processEffect init effect handler failed, %d model path: %s", ret, modelDir_.c_str()];
     logMessage(ret, log);
     ret = bef_effect_ai_composer_set_mode(byteEffectHandler_, 1, 0);
     
-    log = formatLog("BDProcessor::processEffect set composer mode failed %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processEffect set composer mode failed %d", ret];
     logMessage(ret, log);
   }
   
@@ -117,18 +106,18 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
       const char *nodes[] = {};
       ret = bef_effect_ai_composer_set_nodes(byteEffectHandler_,
                                              nodes, 0);
-      log = formatLog("BDProcessor::processEffect composer set nodes to empty failed ! %d", ret);
+      log = [NSString stringWithFormat:@"BDProcessor::processEffect composer set nodes to empty failed ! %d", ret];
       logMessage(ret, log);
     } else {
       ret = bef_effect_ai_composer_set_nodes(byteEffectHandler_,
                                              (const char **) aiNodes_, aiNodeCount_);
-      log = formatLog("BDProcessor::processEffect composer set nodes failed ! %d", ret);
+      log = [NSString stringWithFormat:@"BDProcessor::processEffect composer set nodes failed ! %d", ret];
       logMessage(ret, log);
       for (SizeType i = 0; i < aiNodeCount_; i++) {
         ret = bef_effect_ai_composer_update_node(byteEffectHandler_, aiNodes_[i],
                                                  aiNodeKeys_[i].c_str(),
                                                  aiNodeIntensities_[i]);
-        log = formatLog("BDProcessor::processEffect update composer failed %d %s %s %f", ret, aiNodeKeys_[i].c_str(), aiNodes_[i], aiNodeIntensities_[i]);
+        log = [NSString stringWithFormat:@"BDProcessor::processEffect update composer failed %d %s %s %f", ret, aiNodeKeys_[i].c_str(), aiNodes_[i], aiNodeIntensities_[i]];
         logMessage(ret, log);
       }
     }
@@ -142,12 +131,12 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
   bef_effect_result_t ret;
   if (faceStickerEnabled_) {
     ret = bef_effect_ai_set_effect(byteEffectHandler_, faceStickerItemPath_.c_str());
-    log = formatLog("BDProcessor::updateEffect set sticker effect failed %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::updateEffect set sticker effect failed %d", ret];
     logMessage(ret, log);
   } else {
     ret = bef_effect_ai_set_effect(byteEffectHandler_, "");
-    log = formatLog("BDProcessor::updateEffect clear sticker effect failed %d",
-                    ret);
+    log = [NSString stringWithFormat:@"BDProcessor::updateEffect clear sticker effect failed %d",
+                    ret];
     logMessage(ret, log);
   }
   
@@ -155,13 +144,13 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
                                        BEF_AI_PIX_FMT_RGBA8888, capturedFrame.width,
                                        capturedFrame.height, capturedFrame.yStride * 4,
                                        timestamp);
-  log = formatLog("BDProcessor::updateEffect ai algorithm buffer failed %d", ret);
+  log = [NSString stringWithFormat:@"BDProcessor::updateEffect ai algorithm buffer failed %d", ret];
   logMessage(ret, log);
   ret = bef_effect_ai_process_buffer(byteEffectHandler_, rgbaBuffer_,
                                      BEF_AI_PIX_FMT_RGBA8888, capturedFrame.yStride,
                                      capturedFrame.height, capturedFrame.yStride * 4,
                                      rgbaBuffer_, BEF_AI_PIX_FMT_RGBA8888, timestamp);
-  log = formatLog("BDProcessor::updateEffect ai process buffer failed %d", ret);
+  log = [NSString stringWithFormat:@"BDProcessor::updateEffect ai process buffer failed %d", ret];
   logMessage(ret, log);
   
   cvt_rgba2yuv(rgbaBuffer_, yuvBuffer_, BEF_AI_PIX_FMT_YUV420P, capturedFrame.yStride,
@@ -176,16 +165,15 @@ void BDProcessor::processEffect(const agora::media::base::VideoFrame &capturedFr
 }
 
 void BDProcessor::processFaceDetect() {
-  std::string log;
   if (!faceDetectHandler_) {
     bef_effect_result_t ret;
     ret = bef_effect_ai_face_detect_create(
                                            BEF_DETECT_SMALL_MODEL | BEF_DETECT_FULL | BEF_DETECT_MODE_VIDEO,
                                            faceDetectModelPath_.c_str(), &faceDetectHandler_);
-    log = formatLog("BDProcessor::processFaceDetect create face detect handle failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processFaceDetect create face detect handle failed ! %d", ret];
     logMessage(ret, log);
     ret = bef_effect_ai_face_check_license(faceDetectHandler_, licensePath_.c_str());
-    log = formatLog("BDProcessor::processFaceDetect check_license face detect failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processFaceDetect check_license face detect failed ! %d", ret];
     logMessage(ret, log);
     
     ret = bef_effect_ai_face_detect_setparam(faceDetectHandler_,
@@ -199,11 +187,11 @@ void BDProcessor::processFaceDetect() {
     bef_effect_result_t ret;
     ret = bef_effect_ai_face_attribute_create(0, faceAttributeModelPath_.c_str(),
                                               &faceAttributesHandler_);
-    log = formatLog("BDProcessor::processFaceDetect create face attribute handle failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processFaceDetect create face attribute handle failed ! %d", ret];
     logMessage(ret, log);
     
     ret = bef_effect_ai_face_attribute_check_license(faceAttributesHandler_, licensePath_.c_str());
-    log = formatLog("BDProcessor::processFaceDetect check_license face attribute failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processFaceDetect check_license face attribute failed ! %d", ret];
     logMessage(ret, log);
   }
   
@@ -211,7 +199,7 @@ void BDProcessor::processFaceDetect() {
   memset(&faceInfo, 0, sizeof(bef_ai_face_info));
   bef_effect_result_t ret;
   ret = bef_effect_ai_face_detect(faceDetectHandler_, rgbaBuffer_, BEF_AI_PIX_FMT_RGBA8888, prevFrame_.yStride, prevFrame_.height, prevFrame_.yStride * 4, BEF_AI_CLOCKWISE_ROTATE_0, BEF_DETECT_MODE_VIDEO | BEF_DETECT_FULL, &faceInfo);
-  log = formatLog("BDProcessor::processFaceDetect face info detect failed ! %d", ret);
+  log = [NSString stringWithFormat:@"BDProcessor::processFaceDetect face info detect failed ! %d", ret];
   logMessage(ret, log);
   
   bef_ai_face_attribute_result attributeResult;
@@ -229,7 +217,7 @@ void BDProcessor::processFaceDetect() {
                                                     faceInfo.base_infos,
                                                     faceInfo.face_count, attriConfig,
                                                     &attributeResult);
-    log = formatLog("face attribute detect failed ! %d", ret);
+    log = [NSString stringWithFormat:@"face attribute detect failed ! %d", ret];
     logMessage(ret, log);
   }
   
@@ -257,21 +245,20 @@ void BDProcessor::processFaceDetect() {
   }
   writer.EndArray();
   writer.EndObject();
-  const char* text = strBuf.GetString();
+  NSString* text = [[NSString alloc] initWithCString:strBuf.GetString() encoding:NSUTF8StringEncoding];
   logMessage(-1, text);
   dataCallback(text);
 }
 
 void BDProcessor::processHandDetect() {
-  std::string log;
   if (!handDetectHandler_) {
     bef_effect_result_t ret;
     
     ret = bef_effect_ai_hand_detect_create(&handDetectHandler_, 0);
-    log = formatLog("BDProcessor::processHandDetect create hand detect handle failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processHandDetect create hand detect handle failed ! %d", ret];
     logMessage(ret, log);
     ret = bef_effect_ai_hand_check_license(handDetectHandler_, licensePath_.c_str());
-    log = formatLog("BDProcessor::processHandDetect check_license hand detect failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processHandDetect check_license hand detect failed ! %d", ret];
     logMessage(ret, log);
     ret = bef_effect_ai_hand_detect_setmodel(handDetectHandler_,
                                              BEF_AI_HAND_MODEL_DETECT,
@@ -300,7 +287,7 @@ void BDProcessor::processHandDetect() {
                                   BEF_AI_HAND_MODEL_DETECT | BEF_AI_HAND_MODEL_BOX_REG |
                                   BEF_AI_HAND_MODEL_GESTURE_CLS |
                                   BEF_AI_HAND_MODEL_KEY_POINT, &handInfo, 0);
-  log = formatLog("hand detect failed ! %d", ret);
+  log = [NSString stringWithFormat:@"hand detect failed ! %d", ret];
   logMessage(ret, log);
   
   rapidjson::StringBuffer strBuf;
@@ -324,22 +311,20 @@ void BDProcessor::processHandDetect() {
   writer.EndArray();
   
   writer.EndObject();
-  const char* text = strBuf.GetString();
+  NSString* text = [[NSString alloc] initWithCString:strBuf.GetString() encoding:NSUTF8StringEncoding];
   dataCallback(text);
-  
 }
 
 void BDProcessor::processLightDetect() {
-  std::string log;
   if (!lightDetectHandler_) {
     bef_effect_result_t ret;
     
     ret = bef_effect_ai_lightcls_create(&lightDetectHandler_,
                                         lightDetectModelPath_.c_str(), 5);
-    log = formatLog("BDProcessor::processLightDetect create face detect handle failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processLightDetect create face detect handle failed ! %d", ret];
     logMessage(ret, log);
     ret = bef_effect_ai_lightcls_check_license(lightDetectHandler_, licensePath_.c_str());
-    log = formatLog("BDProcessor::processLightDetect check_license light detect failed ! %d", ret);
+    log = [NSString stringWithFormat:@"BDProcessor::processLightDetect check_license light detect failed ! %d", ret];
     logMessage(ret, log);
   }
   
@@ -349,7 +334,7 @@ void BDProcessor::processLightDetect() {
                                       BEF_AI_PIX_FMT_RGBA8888, prevFrame_.yStride,
                                       prevFrame_.height, prevFrame_.yStride * 4,
                                       BEF_AI_CLOCKWISE_ROTATE_0, &lightInfo);
-  log = formatLog("light detect failed ! %d", ret);
+  log = [NSString stringWithFormat:@"light detect failed ! %d", ret];
   logMessage(ret, log);
   
   rapidjson::StringBuffer strBuf;
@@ -364,11 +349,11 @@ void BDProcessor::processLightDetect() {
   writer.Double(lightInfo.prob);
   writer.EndObject();
   writer.EndObject();
-  const char* text = strBuf.GetString();
+  NSString* text = [[NSString alloc] initWithCString:strBuf.GetString() encoding:NSUTF8StringEncoding];
   dataCallback(text);
 }
 
-int BDProcessor::processFrame(const agora::media::base::VideoFrame &capturedFrame) {
+int BDProcessor::processFrame(AgoraExtVideoFrame* capturedFrame) {
   const std::lock_guard<std::mutex> lock(mutex_);
   
   if (aiEffectEnabled_ || faceAttributeEnabled_) {
@@ -426,7 +411,7 @@ int BDProcessor::releaseEffectEngine() {
     free(rgbaBuffer_);
     rgbaBuffer_ = nullptr;
   }
-  prevFrame_ = agora::media::base::VideoFrame();
+  prevFrame_ = [AgoraExtVideoFrame new];
   
   faceAttributeEnabled_ = false;
   faceDetectModelPath_.clear();
@@ -526,8 +511,7 @@ int BDProcessor::setParameters(std::string parameter) {
           aiNodeKeys_.push_back(vKey.GetString());
           aiNodeIntensities_.push_back(vIntensity.GetFloat());
         } else {
-          std::string log = formatLog("plugin.bytedance.ai.composer.nodes param error: idx %d",
-                                      i);
+          log = [NSString stringWithFormat:@"plugin.bytedance.ai.composer.nodes param error: idx %d", i];
           logMessage(-1, log);
         }
       }

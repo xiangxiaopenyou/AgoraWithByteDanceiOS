@@ -7,31 +7,9 @@
 
 #pragma once
 
-#include "AgoraRtcKit2/AgoraMediaBase.h"
-#include "AgoraRtcKit2/NGIAgoraMediaNode.h"
-#include "AgoraRtcKit2/AgoraRefPtr.h"
+#import <AgoraRtcKit/AgoraVideoFilterDelegate.h>
 #include "BDProcessor.h"
 
-namespace ByteDance {
-namespace Extension {
-class BDVideoFilter: public agora::rtc::IVideoFilter {
-public:
-  BDVideoFilter(agora::agora_refptr<BDProcessor> bdProcessor);
-  ~BDVideoFilter();
-  
-  size_t setProperty(const char* key, const void* buf, size_t buf_size) override;
-  bool onDataStreamWillStart() override;
-  void onDataStreamWillStop() override;
-  
-  bool adaptVideoFrame(const agora::media::base::VideoFrame& capturedFrame,
-                               agora::media::base::VideoFrame& adaptedFrame) override;
-  
-protected:
-  BDVideoFilter() = default;
-private:
-  agora::agora_refptr<BDProcessor> bdProcessor_;
-  bool opengl_released_ = false;
-};
-
-}
-}
+@interface BDVideoFilter : NSObject <AgoraVideoFilterDelegate>
+- (instancetype)initWithProcessor:(ByteDance::Extension::BDProcessor *)processor;
+@end

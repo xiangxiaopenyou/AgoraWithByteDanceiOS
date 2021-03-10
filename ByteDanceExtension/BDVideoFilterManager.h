@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "AgoraRtcKit2/AgoraMediaFilterExtensionDelegate.h"
+#import <AgoraRtcKit/AgoraMediaFilterExtensionDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BDVideoExtensionObject : NSObject <AgoraMediaFilterExtensionDelegate>
 @property (copy, nonatomic) NSString * __nonnull vendorName;
-@property (assign, nonatomic) void * __nullable mediaFilterProvider;
+@property (assign, nonatomic) id<AgoraExtProviderDelegate> __nullable mediaFilterProvider;
 
 @end
 

@@ -8,49 +8,55 @@
 #import "BDVideoFilterProvider.h"
 #include "BDVideoFilter.h"
 
-namespace ByteDance {
-namespace Extension {
-BDExtensionProvider::BDExtensionProvider(agora::agora_refptr<BDProcessor> processor): processor_(processor) {}
-BDExtensionProvider::~BDExtensionProvider() {}
-
-void BDExtensionProvider::setExtensionControl(agora::rtc::IExtensionControl* control) {
-  extension_control_ = control;
+@implementation BDExtensionProvider {
+  ByteDance::Extension::BDProcessor* _processor;
+  id<AgoraExtControlDelegate> _extControl;
 }
 
-agora::rtc::IExtensionProvider::PROVIDER_TYPE BDExtensionProvider::getProviderType() {
-  return agora::rtc::IExtensionProvider::PROVIDER_TYPE::LOCAL_VIDEO_FILTER;
+- (instancetype)initWithProcessor:(ByteDance::Extension::BDProcessor *)processor {
+  if (self = [super init]) {
+    _processor = processor;
+  }
+  return self;
 }
 
-agora::agora_refptr<agora::rtc::IAudioFilter> BDExtensionProvider::createAudioFilter(const char* id) {
-  return nullptr;
-}
-
-agora::agora_refptr<agora::rtc::IVideoFilter> BDExtensionProvider::createVideoFilter(const char* id) {
-  if (processor_) {
-    auto videoFilter = new agora::RefCountedObject<ByteDance::Extension::BDVideoFilter>(processor_);
-    return videoFilter;
+- (NSInteger)log:(AgoraExtLogLevel)level message:(NSString * __nullable)message {
+  if (!message || !message.length) { return -1; }
+  if (_extControl) {
+    return [_extControl log:level message:message];
   }
   
-  return nullptr;
-}
-
-agora::agora_refptr<agora::rtc::IVideoSinkBase> BDExtensionProvider::createVideoSink(const char* id) {
-  return nullptr;
-}
-
-int BDExtensionProvider::log(agora::commons::LOG_LEVEL level, const char* message) {
-  if (extension_control_) {
-    return extension_control_->log(level, message);
-  }
   return -1;
 }
 
-int BDExtensionProvider::fireEvent(const char *vendor, const char* event_json_str) {
-  if (extension_control_) {
-    return extension_control_->fireEvent(vendor, event_json_str, event_json_str);
+- (NSInteger)fireEvent:(NSString * __nonnull)vendor key:(NSString * __nullable)key value:(NSString * __nullable)value {
+  if (!vendor || !vendor.length) { return -1; }
+  if (_extControl) {
+    return [_extControl fireEvent:vendor key:key value:value];
   }
+  
   return -1;
 }
 
+- (AgoraExtProviderType)extType {
+  return AgoraExtProviderTypeLocalVideoFilter;
 }
+
+- (void)setExtensionControl:(id<AgoraExtControlDelegate> __nullable)control {
+  _extControl = control;
 }
+
+- (id<AgoraAudioFilterDelegate> __nullable)createAudioFilter {
+  return nil;
+}
+
+- (id<AgoraVideoFilterDelegate> __nullable)createVideoFilter {
+  if (!_processor) { return nil; }
+  return [[BDVideoFilter alloc] initWithProcessor:_processor];
+}
+
+- (id<AgoraVideoSinkDelegate> __nullable)createVideoSink {
+  return nil;
+}
+
+@end
