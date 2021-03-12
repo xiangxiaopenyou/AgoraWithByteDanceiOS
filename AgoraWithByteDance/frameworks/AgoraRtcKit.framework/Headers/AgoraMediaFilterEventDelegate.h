@@ -10,7 +10,7 @@
 
 @protocol AgoraMediaFilterEventDelegate <NSObject>
 
-/* Media filter(audio filter or video filter) event callback
+/* Meida filter(audio filter or video filter) event callback
  */
 - (void)onEvent:(NSString * __nullable)vendor
             key:(NSString * __nullable)key

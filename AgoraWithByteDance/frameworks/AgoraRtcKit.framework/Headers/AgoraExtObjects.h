@@ -45,6 +45,13 @@ __attribute__((visibility("default"))) @interface AgoraExtVideoFrame : NSObject
  * - 12: iOS texture (CVPixelBufferRef)
  */
 @property (nonatomic, assign) NSInteger type;
+
+/**
+ * use CVPixelBuffer or yuv raw data, Default value is YES, if use raw data,
+ * should set isUseCVPixelBuffer to NO
+ */
+@property (nonatomic, assign) BOOL isUseCVPixelBuffer;
+
 /**
  * The width of the Video frame.
  */

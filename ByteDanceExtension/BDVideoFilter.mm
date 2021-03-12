@@ -33,6 +33,7 @@
     *dstFrame = nil;
     _processor->processFrame(srcFrame);
     *dstFrame = srcFrame;
+    (*dstFrame).isUseCVPixelBuffer = NO;
     return true;
   }
   return false;

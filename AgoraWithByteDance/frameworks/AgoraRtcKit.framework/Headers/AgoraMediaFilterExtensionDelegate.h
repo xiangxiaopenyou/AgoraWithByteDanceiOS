@@ -54,13 +54,27 @@ typedef NS_ENUM(NSInteger, AgoraExtLogLevel) {
 
 @end
 
+/*
+ * If you prefer to use cpp to implement Extension Plugin, you MUST implement
+ * - (NSString * __nonnull)vendor; & - (void * __nullable)mediaFilterRawProvider; interface methods
+ * If you prefer to use ObjC to implement Extension Plugin, you MUST implement
+ * - (NSString * __nonnull)vendor; & - (id<AgoraExtProviderDelegate> __nullable)mediaFilterProvider; interface methods
+ */
 @protocol AgoraMediaFilterExtensionDelegate <NSObject>
 /* Media filter(audio filter or video fitler) name, shoud be unique
  *
  */
 - (NSString * __nonnull)vendor;
+
+@optional
 /* Meida filter(audio filter or video filter or video sink) pointer,
- * this pointer should implement AgoraExtProviderDelegate interface
+ * this pointer MUST implement AgoraExtProviderDelegate interface
  */
 - (id<AgoraExtProviderDelegate> __nullable)mediaFilterProvider;
+
+/* Meida filter(audio filter or video filter) pointer,
+ * this pointer MUST implement IExtensionProvider interface
+ */
+- (void * __nullable)mediaFilterRawProvider;
+
 @end
