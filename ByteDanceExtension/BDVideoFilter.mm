@@ -28,12 +28,15 @@
   _processor = nullptr;
 }
 
+- (BOOL)isUseCVPixelBuffer {
+  return NO;
+}
+
 - (BOOL)adaptVideoFrame:(AgoraExtVideoFrame *)srcFrame dstFrame:(AgoraExtVideoFrame **)dstFrame {
   if (_processor) {
     *dstFrame = nil;
     _processor->processFrame(srcFrame);
     *dstFrame = srcFrame;
-    (*dstFrame).isUseCVPixelBuffer = NO;
     return true;
   }
   return false;

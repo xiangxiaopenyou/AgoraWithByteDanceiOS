@@ -19,6 +19,13 @@
 @protocol AgoraVideoFilterDelegate <NSObject>
 
 /**
+ * VideoFilter's Video Data Format Use CVPixelBuffer or Not
+ * @return
+ * - `YES`: Use CVPixelBuffer.
+ * - `NO`: Not Use CVPixelBuffer.
+ */
+- (BOOL)isUseCVPixelBuffer;
+/**
  * Adapts the video frame.
  *
  * @param srcFrame The pointer to the captured video frame that you want to adapt.
